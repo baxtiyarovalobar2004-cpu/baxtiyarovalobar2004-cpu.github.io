@@ -7,7 +7,7 @@
 - **Nima taklif qiladi:** akademik litseyda o'qish; yo'nalishlar [?]
 - **Narx:** davlat litseyi, o'qish to'lovi [?]
 - **Joylashuv:** Urganch, Xorazm
-- **Instagram:** https://www.instagram.com/urdu_al_rasmiy_
+- **Instagram:** https://www.instagram.com/urdu_al_rasmiy_ (Abu Rayhon Beruniy nomidagi UrDU akademik litseyi, tel. bio'da)
 - **Telegram / YouTube / sayt:** [?]
 
 ## Lobar Agency vazifasi
@@ -40,8 +40,8 @@ Hammasi: strategiya, kontent (ssenariy, suratga olish, montaj), SMM, target rekl
 - Bino, laboratoriyalar, to'garaklar, yotoqxona: [?]
 
 ## Hozirgi holat (boshlang'ich nuqta — 12.11.2026 da yozib qo'yish shart)
-- Obunachilar: [?]
-- So'nggi 30 kunda o'rtacha qamrov va Reels ko'rishlari: [?]
+- Obunachilar: ≈1 000, 93 post (vidIQ, 12.11.2026)
+- So'nggi 12 Reels: o'rtacha ≈6.4K, median ≈4.7K ko'rish; eng yaxshisi 24K (tadbir), 15.3K (savolli video)
 - O'tgan yilgi qabul: arizalar soni, joylar soni [?]
 - Kontent kim tomonidan, qanchalik tez-tez joylanadi: [?]
 
