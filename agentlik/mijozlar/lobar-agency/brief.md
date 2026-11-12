@@ -41,3 +41,6 @@
 - **Ishlayotgan kanallar:** shaxsiy sayt, Instagram, Telegram, LinkedIn. Agentlik **shaxsiy sahifa** (@smm_lobar_baxtiyarova) orqali olib boriladi — alohida akkaunt ochilmaydi
 - **Kontent natijalari (2026-10-28):** eng kuchli — trend/foydali funksiya (Instagram xarita, 251.6K) va sahnali skitlar (20.3K); seriya 1/10 — 587, 2/10 — 933 ko'rish
 - **Seriya holati:** 1/10, 2/10 joylangan; 3/10 montaj qilingan; 4–10 ssenariylari tayyor
+
+## Ish jadvali
+- Google Sheets (kontent reja, raqobatchilar, hisobot): https://docs.google.com/spreadsheets/d/1zJJR0Y-C95NQapPMlWmjk3UbNqVO5vRRw0WN0JQwM58/edit

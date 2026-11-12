@@ -451,7 +451,7 @@ function fresh() {
 }
 function load() { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === C.VERSION) { s.pmLog = s.pmLog || []; return s; } } catch (e) {} return fresh(); }
 let S = load();
-const save = () => localStorage.setItem(KEY, JSON.stringify(S));
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const roomById = id => S.rooms.find(r => r.id === id);
 const openQ = id => { const w = S.workers[id]; return w && S.questions.find(q => q.room === w.room && q.role === w.role && !q.a); };
 
@@ -718,8 +718,8 @@ $("#queue").addEventListener("click", e => { const id = +e.target.dataset.del; i
 $("#questions").addEventListener("click", e => { const id = e.target.dataset.q; if (id) openQuestion(S.questions.find(q => q.id === id)); });
 $("#copyAns").onclick = () => {
   const txt = S.questions.filter(q => q.a && roomById(q.room)).map(q => `${who(q)}\nSavol: ${q.q}\nJavob: ${q.a}`).join("\n\n");
-  if (!txt) return alert("Hali javob berilmagan.");
-  navigator.clipboard.writeText(txt).then(() => alert("Javoblar nusxalandi — Claude bilan suhbatga joylang."), () => prompt("Nusxalang:", txt));
+  if (!txt) return uiAsk("Hali javob berilmagan.", { cancel: "" });
+  uiAsk("Javoblarni nusxalab, Claude bilan suhbatga joylang:", { copy: true, value: txt, ok: "📋 Nusxalash", cancel: "Yopish" });
 };
 
 // ---------- Bildirishnomalar ----------
@@ -831,6 +831,22 @@ function pmSuggest() {
   pmLog(text, "idea", true); pmSay("💡 Lobarga taklif yubordim", 3000);
 }
 
+// ---------- Sahifa ichidagi oynalar (alert/confirm/prompt o'rniga) ----------
+const dlg2 = document.createElement("dialog"); document.body.appendChild(dlg2);
+function uiAsk(msg, { input = false, value = "", ok = "OK", cancel = "Bekor qilish", copy = false } = {}) {
+  return new Promise(res => {
+    dlg2.innerHTML = `<p style="white-space:pre-wrap">${esc(msg)}</p>${input ? `<input id="ui-in" style="width:100%" value="${esc(value)}">` : ""}${copy ? `<textarea id="ui-tx" style="width:100%;min-height:160px" readonly>${esc(value)}</textarea>` : ""}
+      <div class="row">${cancel ? `<button id="ui-no">${cancel}</button>` : ""}<button id="ui-ok">${ok}</button></div>`;
+    const done = v => { dlg2.close(); res(v); };
+    if (cancel) $("#ui-no", dlg2).onclick = () => done(null);
+    $("#ui-ok", dlg2).onclick = () => {
+      if (copy) { const t = $("#ui-tx", dlg2); t.select(); try { navigator.clipboard.writeText(value).catch(() => {}); } catch (e) {} try { document.execCommand("copy"); } catch (e) {} }
+      done(input ? $("#ui-in", dlg2).value : true);
+    };
+    dlg2.showModal(); const i = $("#ui-in", dlg2); if (i) i.focus();
+  });
+}
+
 // ---------- Boshqaruv ----------
 function buildTabs() { $("#tabs").innerHTML = `<button data-view="all">🏢 Hamma xonalar</button>` + S.rooms.map(r => `<button data-view="${r.id}">🚪 ${esc(r.nom)}</button>`).join(""); }
 $("#tabs").addEventListener("click", e => { const v = e.target.dataset.view; if (v) { S.view = v; save(); applyView(); snapAll(); PM.busy = false; } });
@@ -843,23 +859,23 @@ roomsEl.addEventListener("click", e => {
   const id = e.target.dataset && e.target.dataset.delroom; if (!id) return;
   e.stopPropagation();
   const r = roomById(id);
-  if (!confirm(`"${r.nom}" xonasini o'chiraymi? Uning vazifalari ham o'chadi.`)) return;
+  uiAsk(`"${r.nom}" xonasini o'chiraymi? Uning vazifalari ham o'chadi.`, { ok: "O'chirish" }).then(y => { if (!y) return;
   S.rooms = S.rooms.filter(x => x.id !== id);
   for (const k of Object.keys(S.workers)) if (S.workers[k].room === id) delete S.workers[k];
   S.queue = S.queue.filter(t => t.room !== id); S.done = S.done.filter(t => t.room !== id); S.questions = S.questions.filter(q => q.room !== id);
-  save(); buildRooms(); render();
+  save(); buildRooms(); render(); });
 });
 $("#autoBtn").onclick = () => { S.auto = !S.auto; save(); render(); };
 $("#speedBtn").onclick = () => { S.speed = { 1: 3, 3: 10, 10: 1 }[S.speed] || 1; save(); render(); };
 $("#pauseBtn").onclick = () => { S.paused = !S.paused; save(); render(); };
-$("#resetBtn").onclick = () => { if (confirm("Ofisni boshlang'ich holatga qaytaraymi? Siz qo'shgan xonalar, topshiriqlar va javoblar o'chadi.")) { S = fresh(); save(); buildRooms(); render(); } };
-$("#addRoomBtn").onclick = () => {
-  const nom = (prompt("Yangi loyiha (xona) nomi:", "") || "").trim().slice(0, 60); if (!nom) return;
+$("#resetBtn").onclick = () => uiAsk("Ofisni boshlang'ich holatga qaytaraymi? Siz qo'shgan xonalar, topshiriqlar va javoblar o'chadi.", { ok: "Qaytarish" }).then(y => { if (y) { S = fresh(); save(); buildRooms(); render(); } });
+$("#addRoomBtn").onclick = () => uiAsk("Yangi loyiha (xona) nomi:", { input: true, ok: "Xona ochish" }).then(v => {
+  const nom = (v || "").trim().slice(0, 60); if (!nom) return;
   const id = "x" + Date.now().toString(36);
   seedRoom(S, { id, nom, rang: ROOM_COLORS[S.rooms.length % ROOM_COLORS.length] }, true);
   S.view = id; save(); buildRooms(); render();
   pmLog(`Yangi loyiha xonasi ochildi: "${nom}". Brif bersangiz, birinchi vazifalarni taqsimlayman.`, "idea", true);
-};
+});
 const fRoom = $("#fRoom"), fRole = $("#fRole");
 function fillRoomSelect() { const prev = fRoom.value; fRoom.innerHTML = S.rooms.map(r => `<option value="${r.id}">${esc(r.nom)}</option>`).join(""); if (roomById(prev)) fRoom.value = prev; }
 fRole.innerHTML = C.bolimlar.map(b => `<optgroup label="${esc(b.nom)}">${b.xodimlar.map(([k, n]) => `<option value="${k}">${esc(n)}</option>`).join("")}</optgroup>`).join("");

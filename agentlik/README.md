@@ -39,3 +39,12 @@ Claude Code ichida ishlaydigan marketing jamoasi. Uni boshqaradigan direktor va 
 - "➕ Yangi loyiha" tugmasi yangi xona qo'shadi.
 - Doimiy xonalar va vazifalar `agentlik/ofis/vazifalar.js` faylida (o'zgartirgach `VERSION` ni oshiring).
 - Ish jarayoni simulyatsiya: vazifalar haqiqiy rejalardan, progress esa taxminiy.
+
+## Har bir loyiha alohida
+| Loyiha | Brif | Google Sheets |
+|---|---|---|
+| Lobar Agency — shaxsiy brend | `mijozlar/lobar-agency/` | https://docs.google.com/spreadsheets/d/1zJJR0Y-C95NQapPMlWmjk3UbNqVO5vRRw0WN0JQwM58/edit |
+| UrDU akademik litseyi | `mijozlar/urdu-litsey/` | https://docs.google.com/spreadsheets/d/11cN98CObIFLY0felR8cYyfK_QTLC306LRt-C31OX4rg/edit |
+
+Ofis (faqat egasiga ko'rinadi): https://claude.ai/artifact/SskcorgvTg1z8nMreXFT84
+Raqobatchilar tahlili vidIQ orqali, haftasiga 1 marta (kredit tejash uchun).

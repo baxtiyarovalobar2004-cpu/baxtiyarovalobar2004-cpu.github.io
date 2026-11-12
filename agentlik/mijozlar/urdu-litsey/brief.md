@@ -47,3 +47,6 @@ Hammasi: strategiya, kontent (ssenariy, suratga olish, montaj), SMM, target rekl
 
 ## Tarix
 - Lobar avval **UrDPI akademik litseyi** bilan 2 oy ishlagan (qabul mavsumi). O'sha tajriba va xulosalar bu loyihada ishlatiladi.
+
+## Ish jadvali
+- Google Sheets (kontent reja, raqobatchilar, hisobot): https://docs.google.com/spreadsheets/d/11cN98CObIFLY0felR8cYyfK_QTLC306LRt-C31OX4rg/edit
