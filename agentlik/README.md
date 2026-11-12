@@ -1,0 +1,32 @@
+# AI Marketing Agentlik
+
+Claude Code ichida ishlaydigan marketing jamoasi. Uni boshqaradigan direktor va 8 ta bo'lim bor. Rasmdagi 50 ta marketing vazifasi shu bo'limlarga taqsimlangan.
+
+## Jamoa
+
+| Bo'lim | Skill | Nima qiladi |
+|---|---|---|
+| Direktor | `agentlik-direktor` | Vazifani qabul qiladi, bo'limlarga taqsimlaydi, ko'p ekspertli maslahat beradi |
+| Bozor tahlili | `bozor-tahlili` | Mijozlar tadqiqoti, raqobatchilar, prospecting, psixologiya, bozor tahlili |
+| Strategiya | `strategiya` | Pozitsiya, offer, narx, marketing reja, o'sish halqalari, brend |
+| SEO | `seo` | Audit, AI-SEO, sayt arxitekturasi, programmatic SEO, schema, kalit so'zlar |
+| Kontent | `kontent` | Kontent strategiya, kopirayting, tahrir, g'oyalar, kataloglar, kalendar |
+| SMM | `smm` | Instagram/Telegram/TikTok, video, rasm, hamjamiyat, blogerlar, LinkedIn |
+| Lid generatsiya | `lid-generatsiya` | Lid magnit, bepul vositalar, kreativlar, reklama, co-marketing, isitish |
+| Analitika va CRO | `analitika-cro` | Konversiya, A/B test, ro'yxatdan o'tish, popup, tariflar, analitika |
+| Operatsiyalar | `operatsiyalar` | Launch, PR, referal, ASO, RevOps/CRM |
+
+## Qanday ishlatiladi
+
+1. Shu repoda Claude Code sessiyasini oching (skilllar `.claude/skills/` dan avtomatik yuklanadi).
+2. Yangi mijoz uchun `agentlik/mijozlar/_shablon/brief.md` ni nusxalang yoki shunchaki yozing:
+   - `/agentlik-direktor yangi mijoz: Urganchdagi qandolat do'koni, Instagram orqali sotuvni oshirmoqchi`
+3. Yoki to'g'ridan-to'g'ri bo'limga murojaat qiling:
+   - `/bozor-tahlili Toshkentdagi fitnes zallar raqobatini o'rgan`
+   - `/kontent kelasi oy uchun Instagram kontent kalendari`
+   - `/lid-generatsiya Meta reklama uchun 3 ta kreativ konsepsiya`
+4. Natijalar `agentlik/natijalar/<mijoz>/` papkasida saqlanadi.
+
+## Qoidalar
+- Raqam va faktlar o'ylab topilmaydi. Taxminlar "taxmin" deb belgilanadi.
+- Reklama byudjeti, post joylash, xabar yuborish kabi tashqi harakatlar faqat sizning tasdiqingiz bilan bajariladi.
