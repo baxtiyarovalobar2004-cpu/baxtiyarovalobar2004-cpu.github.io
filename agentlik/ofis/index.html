@@ -3,184 +3,242 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="noindex, nofollow, noarchive">
 <title>Lobar Agency — Ofis</title>
 <link rel="icon" href="../../favicon.svg">
 <style>
-:root {
-  --bg: #1d1b26; --panel: #272434; --line: #3a3650; --text: #f2eee6; --muted: #a59fb8;
-  --ok: #4ade80; --sleep: #8a8aa0; --accent: #f4a261;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
-header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 2px solid var(--line); }
-header h1 { margin: 0; font-size: 18px; letter-spacing: .5px; }
-header h1 span { color: var(--accent); }
-.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-button, select, input { font: inherit; color: var(--text); background: var(--panel); border: 2px solid var(--line); border-radius: 6px; padding: 6px 10px; }
-button { cursor: pointer; }
-button:hover { border-color: var(--accent); }
-button.on { background: #2f5d3a; border-color: var(--ok); }
-.clock { color: var(--muted); }
-.stats { color: var(--muted); font-size: 12px; }
+:root { --bg:#191723; --panel:#24212f; --line:#383349; --text:#f2eee6; --muted:#a59fb8; --ok:#4ade80; --accent:#ffc93c; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid var(--line); background:#14121c; position:sticky; top:0; z-index:100; }
+header h1 { margin:0; font-size:18px; font-weight:800; letter-spacing:.3px; }
+header h1 span { color:var(--accent); }
+.controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+button, select, input, textarea { font:inherit; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:6px 11px; }
+button { cursor:pointer; } button:hover { border-color:var(--accent); }
+button.on { background:#1f4a2c; border-color:var(--ok); }
+.clock,.stats { color:var(--muted); font-size:12.5px; }
+.tabs { display:flex; flex-wrap:wrap; gap:6px; margin:14px 16px 0; }
+.tabs button.cur { border-color:var(--accent); background:#3a3020; }
 
 /* ===== Ofis ===== */
-.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 16px 0; }
-.tabs button.cur { border-color: var(--accent); background: #3a2f22; }
-.office { position: relative; margin: 12px 16px 16px; border: 4px solid #4b4560; border-radius: 10px; overflow: hidden; background: #3b3550; }
-.lobby { position: relative; height: 116px; background: repeating-linear-gradient(90deg, #c9b99a 0 20px, #bfae8d 20px 40px); display: flex; align-items: flex-end; justify-content: center; gap: 18px; padding: 10px; border-bottom: 6px solid #5c4d80; }
-.lobby .lbl { position: absolute; top: 8px; left: 12px; font-size: 12px; color: #5b4a30; font-weight: 700; }
-.lobby .coffee { font-size: 30px; }
-.pmdesk { width: 160px; height: 26px; background: #8b5e3c; border-radius: 3px; box-shadow: 0 4px 0 #5e3d26; color: #ffe8c2; font-size: 10px; text-align: center; line-height: 26px; }
-#pmHome { position: absolute; left: calc(50% + 70px); bottom: 16px; width: 1px; height: 1px; }
-.room { position: relative; background: var(--floor, #f6e7d2); border-bottom: 10px solid #5c4d80; }
-.room.hidden { display: none; }
-.wall { position: relative; min-height: 92px; background: linear-gradient(#8d7bb0, #7a68a0); border-bottom: 8px solid #5c4d80; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 10px 14px; gap: 10px; }
-.sign { background: #2b2540; color: #ffe8c2; border: 3px solid #a58b5a; padding: 6px 10px; border-radius: 4px; font-weight: 700; font-size: 14px; box-shadow: 0 3px 0 #0003; }
-.sign button { margin-left: 8px; padding: 0 6px; font-size: 11px; }
-.board { background: #fdfbf5; color: #333; border: 3px solid #b9b0a0; border-radius: 3px; padding: 4px 8px; font-size: 11px; line-height: 1.5; min-width: 150px; }
-.board b { color: #111; }
-.window { width: 54px; height: 46px; background: linear-gradient(#bfe3ff, #8fc8f5); border: 4px solid #eee; box-shadow: inset 0 0 0 2px #ccc; position: relative; }
-.window::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: #eee; }
-.floor { padding: 16px 12px 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: 16px;
-  background-image: repeating-conic-gradient(#0000000c 0 25%, transparent 0 50%); background-size: 40px 40px; }
-.dept { border: 3px dashed color-mix(in srgb, var(--dc) 70%, #000 0%); background: color-mix(in srgb, var(--dc) 14%, transparent); border-radius: 10px; padding: 0 6px 12px; }
-.dept h3 { margin: 0 -6px 18px; padding: 4px 10px; font-size: 12px; background: var(--dc); color: #1d1b26; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; }
-.dept .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px 8px; justify-items: center; }
-.plant { position: absolute; bottom: 8px; right: 10px; font-size: 26px; }
+.office { position:relative; margin:12px 16px 16px; border-radius:14px; overflow:hidden; background:#2c2838; box-shadow:0 10px 40px #0007; }
+.lobby { position:relative; height:128px; background:linear-gradient(#e9e1d3,#ddd3c2); border-bottom:6px solid #b8a98e; display:flex; align-items:flex-end; justify-content:center; gap:26px; padding:0 12px 14px; }
+.lobby .lbl { position:absolute; top:10px; left:14px; font-size:12px; color:#6b5a3e; font-weight:700; letter-spacing:.4px; }
+.reception { width:190px; height:40px; background:linear-gradient(#fff,#ece6dc); border-radius:8px 8px 3px 3px; box-shadow:0 5px 0 #b9ab92; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#2b2540; letter-spacing:1px; }
+.reception b { color:#e0a100; margin-right:4px; }
+#pmHome { position:absolute; left:calc(50% + 130px); bottom:16px; width:1px; height:1px; }
 
-/* ===== Ish joyi ===== */
-.station { position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-.tag { font-size: 10px; font-weight: 700; background: #2b2540; color: #fff; padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: flex; align-items: center; gap: 4px; max-width: 128px; overflow: hidden; text-overflow: ellipsis; z-index: 3; }
-.tag .dot { width: 7px; flex: none; height: 7px; border-radius: 50%; background: var(--sleep); flex: none; }
-.station.work .tag .dot { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
-.bubble { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #fff; color: #222; font-size: 10px; padding: 3px 6px; border-radius: 6px; width: max-content; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 2px solid #2b2540; z-index: 4; opacity: 0; transition: opacity .3s; pointer-events: none; }
-.station:hover .bubble, .station.show .bubble { opacity: 1; }
-.scene { position: relative; width: 116px; height: 92px; }
-.chair { position: absolute; left: 52px; bottom: 26px; width: 34px; height: 40px; background: #3d3a52; border-radius: 8px 8px 3px 3px; }
-.desk { position: absolute; left: 0; right: 0; bottom: 0; height: 30px; background: #a8754e; border-radius: 3px; box-shadow: inset 0 6px 0 #c08d63, 0 4px 0 #6d4a30; z-index: 2; }
-.keyboard { position: absolute; left: 56px; top: 3px; width: 28px; height: 5px; background: #ddd; border-radius: 1px; }
-.mug { position: absolute; right: 6px; top: -9px; width: 10px; height: 11px; background: #fff; border-radius: 0 0 3px 3px; }
-.mug::after { content: ""; position: absolute; right: -4px; top: 2px; width: 4px; height: 5px; border: 2px solid #fff; border-left: 0; border-radius: 0 3px 3px 0; }
-.monitor { position: absolute; left: 4px; bottom: 28px; width: 50px; height: 38px; background: #222; border-radius: 3px; padding: 3px; z-index: 3; }
-.monitor::after { content: ""; position: absolute; left: 20px; bottom: -6px; width: 10px; height: 6px; background: #444; }
-.screen { position: relative; width: 100%; height: 100%; background: #10131a; overflow: hidden; border-radius: 1px; }
-.station.sleep .screen > * { display: none; }
-.station.sleep .screen { background: #0b0c10; }
+.room { position:relative; background:var(--floor); border-bottom:12px solid #3d3650; }
+.room.hidden { display:none; }
+.wall { position:relative; min-height:104px; background:linear-gradient(180deg,#efe8dc,#e3d9c8); border-bottom:10px solid #c4b49a; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:12px 18px; gap:12px; }
+.sign { background:#1f1b2c; color:#fff; padding:8px 14px; border-radius:8px; font-weight:800; font-size:15px; box-shadow:0 4px 0 #0003; border-left:5px solid var(--accent); }
+.sign small { display:block; font-weight:500; font-size:11px; color:#c9c2dc; }
+.sign button { margin-left:8px; padding:0 6px; font-size:11px; }
+.wall-mid { display:flex; gap:18px; align-items:center; }
+.win { width:84px; height:58px; border:5px solid #fff; border-radius:4px; background:linear-gradient(#a8d8ff 0 60%, #cfeaff 60%); position:relative; box-shadow:inset 0 0 0 2px #dfe6ec, 0 3px 0 #0001; overflow:hidden; }
+.win::before { content:""; position:absolute; left:50%; top:0; bottom:0; width:4px; margin-left:-2px; background:#fff; }
+.win i { position:absolute; width:22px; height:8px; background:#fff; border-radius:8px; top:12px; left:-20px; animation:cloud 18s linear infinite; opacity:.9; }
+@keyframes cloud { to { left:100px; } }
+.wclock { width:40px; height:40px; border-radius:50%; background:#fff; border:3px solid #333; position:relative; }
+.wclock i { position:absolute; left:50%; bottom:50%; width:2px; background:#222; transform-origin:bottom center; border-radius:1px; }
+.wclock .h { height:10px; margin-left:-1px; } .wclock .m { height:14px; margin-left:-1px; background:#555; }
+.poster { width:46px; height:58px; background:#1f1b2c; border:3px solid #fff; display:flex; align-items:center; justify-content:center; color:var(--accent); font-weight:900; font-size:18px; box-shadow:0 3px 0 #0002; }
+.board { background:#fff; color:#333; border:1px solid #d5ccbb; border-radius:6px; padding:6px 10px; font-size:11.5px; line-height:1.6; min-width:170px; box-shadow:0 3px 0 #0001; }
+.board b { color:#111; }
 
-/* odamcha */
-.person { position: absolute; left: 56px; bottom: 26px; width: 28px; height: 50px; z-index: 1; }
-.head { position: absolute; left: 4px; top: 0; width: 20px; height: 20px; background: var(--skin); border-radius: 6px; transition: transform .6s; z-index: 2; }
-.hair { position: absolute; left: -1px; top: -2px; width: 22px; height: 9px; background: var(--hair); border-radius: 6px 6px 2px 2px; }
-.eye { position: absolute; top: 9px; width: 3px; height: 3px; background: #222; border-radius: 1px; }
-.eye.l { left: 5px; } .eye.r { left: 12px; }
-.mouth { position: absolute; left: 7px; top: 14px; width: 6px; height: 2px; background: #a0522d; border-radius: 2px; }
-.body { position: absolute; left: 2px; top: 19px; width: 24px; height: 24px; background: var(--shirt); border-radius: 6px 6px 2px 2px; }
-.arm { position: absolute; top: 22px; width: 6px; height: 16px; background: var(--shirt); border-radius: 3px; transform-origin: top center; }
-.arm.l { left: -2px; } .arm.r { left: 24px; }
-.arm::after { content: ""; position: absolute; bottom: -3px; left: 0; width: 6px; height: 5px; background: var(--skin); border-radius: 3px; }
-.station.work .arm.l { animation: type .35s infinite alternate; transform: rotate(-35deg); }
-.station.work .arm.r { animation: type .3s infinite alternate-reverse; transform: rotate(35deg); }
-@keyframes type { from { margin-top: 0; } to { margin-top: 3px; } }
-.station.work .head { animation: nod 2.4s infinite; }
-@keyframes nod { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
-.station.sleep .head { transform: translate(-4px, 16px) rotate(-70deg); }
-.station.sleep .eye { height: 1px; top: 10px; }
-.station.sleep .mouth { width: 3px; height: 3px; border-radius: 50%; left: 8px; }
-.station.sleep .arm.l { transform: rotate(-80deg); top: 26px; }
-.station.sleep .arm.r { transform: rotate(80deg); top: 26px; }
-.zzz { position: absolute; left: 40px; top: 10px; z-index: 5; display: none; font-weight: 700; color: #5b5b80; }
-.station.sleep .zzz { display: block; }
-.zzz span { position: absolute; animation: zz 2.4s infinite; opacity: 0; }
-.zzz span:nth-child(2) { animation-delay: .8s; } .zzz span:nth-child(3) { animation-delay: 1.6s; }
-@keyframes zz { 0% { opacity: 0; transform: translate(0, 10px) scale(.7); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(18px, -26px) scale(1.3); } }
-.wake { position: absolute; left: 62px; top: -4px; font-size: 20px; font-weight: 900; color: #e63946; z-index: 6; animation: pop .9s ease-out forwards; }
-@keyframes pop { 0% { transform: scale(.3); opacity: 0; } 30% { transform: scale(1.3); opacity: 1; } 100% { transform: translateY(-14px); opacity: 0; } }
-.prog { width: 100px; height: 6px; background: #0002; border-radius: 3px; margin-top: 6px; overflow: hidden; }
-.prog i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .5s linear; }
-.note { font-size: 9.5px; color: #6b6380; margin-top: 3px; text-align: center; max-width: 124px; min-height: 13px; }
+.floor { position:relative; padding:20px 14px 24px; display:grid; grid-template-columns:repeat(auto-fill,minmax(440px,1fr)); gap:18px;
+  background-color:var(--floor);
+  background-image:repeating-linear-gradient(0deg,#0000 0 38px,#00000012 38px 40px), repeating-linear-gradient(90deg,#ffffff10 0 160px,#0000000a 160px 162px); }
+.dept { position:relative; border-radius:14px; padding:0 8px 14px; background:color-mix(in srgb,var(--dc) 13%,transparent); border:2px solid color-mix(in srgb,var(--dc) 45%,transparent); }
+.dept h3 { margin:0 -8px 52px; padding:6px 12px; font-size:12.5px; background:var(--dc); color:#1d1b26; border-radius:12px 12px 0 0; display:flex; justify-content:space-between; font-weight:800; }
+.dept h3 span:last-child { font-weight:600; opacity:.8; }
+.dept .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:72px 6px; justify-items:center; }
 
-/* ===== Ekranlar ===== */
-.s-text i { display: block; height: 3px; margin: 3px 2px; background: #9ad; border-radius: 1px; animation: typing 3s steps(8) infinite; }
-.s-text i:nth-child(2) { animation-delay: .6s; } .s-text i:nth-child(3) { animation-delay: 1.2s; } .s-text i:nth-child(4) { animation-delay: 1.8s; }
-@keyframes typing { from { width: 0; } to { width: 90%; } }
-.s-design { background: #f7f3ea !important; }
-.s-design i { position: absolute; border-radius: 2px; animation: hue 4s infinite; }
-.s-design i:nth-child(1) { left: 3px; top: 3px; width: 18px; height: 14px; background: #e76f51; }
-.s-design i:nth-child(2) { left: 24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: #2a9d8f; animation-delay: 1s; }
-.s-design i:nth-child(3) { left: 4px; top: 20px; width: 34px; height: 5px; background: #264653; animation-delay: 2s; }
-.s-design i:nth-child(4) { left: 30px; top: 18px; width: 4px; height: 6px; background: #000; border-radius: 0; animation: cursor 3s infinite; }
-@keyframes hue { 50% { filter: hue-rotate(120deg); } }
-@keyframes cursor { 0% { transform: translate(0,0); } 50% { transform: translate(-22px,-10px); } 100% { transform: translate(0,0); } }
-.s-video i:nth-child(1) { position: absolute; left: 3px; top: 3px; right: 3px; height: 14px; background: linear-gradient(90deg, #355070, #6d597a, #b56576); animation: hue 3s infinite; }
-.s-video i:nth-child(2) { position: absolute; left: 3px; right: 3px; bottom: 4px; height: 4px; background: #e9c46a; }
-.s-video i:nth-child(3) { position: absolute; left: 3px; right: 10px; bottom: 10px; height: 3px; background: #2a9d8f; }
-.s-video i:nth-child(4) { position: absolute; bottom: 2px; width: 2px; height: 14px; background: #e63946; animation: play 2.5s linear infinite; }
-@keyframes play { from { left: 3px; } to { left: 40px; } }
-.s-chart { display: flex; align-items: flex-end; gap: 3px; padding: 3px; }
-.s-chart i { flex: 1; background: #4ade80; animation: bar 1.8s infinite alternate; }
-.s-chart i:nth-child(2) { animation-delay: .3s; background: #60a5fa; } .s-chart i:nth-child(3) { animation-delay: .6s; } .s-chart i:nth-child(4) { animation-delay: .9s; background: #fbbf24; }
-@keyframes bar { from { height: 20%; } to { height: 95%; } }
-.s-ads i:nth-child(1) { position: absolute; left: 3px; top: 3px; width: 18px; height: 22px; background: #fff; border-radius: 2px; }
-.s-ads i:nth-child(1)::after { content: "AD"; position: absolute; left: 3px; top: 6px; font-size: 7px; color: #f4a261; font-weight: 900; }
-.s-ads i:nth-child(2) { position: absolute; left: 24px; bottom: 4px; width: 16px; height: 2px; background: #4ade80; transform-origin: left; animation: rise 2s infinite alternate; }
-.s-ads i:nth-child(3) { position: absolute; left: 24px; top: 4px; font-style: normal; font-size: 7px; color: #4ade80; }
-@keyframes rise { from { transform: rotate(-10deg); } to { transform: rotate(-45deg); } }
-.s-social { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 3px; }
-.s-social i { background: #e85d9a; border-radius: 1px; animation: hue 3s infinite; }
-.s-social i:nth-child(2n) { animation-delay: 1s; background: #f4a261; }
-.s-mind i { position: absolute; width: 8px; height: 6px; border-radius: 2px; background: #b392f0; }
-.s-mind i:nth-child(1) { left: 17px; top: 11px; width: 10px; background: #fbbf24; animation: hue 2s infinite; }
-.s-mind i:nth-child(2) { left: 3px; top: 3px; } .s-mind i:nth-child(3) { left: 32px; top: 3px; } .s-mind i:nth-child(4) { left: 3px; top: 22px; } .s-mind i:nth-child(5) { left: 32px; top: 22px; }
-.s-chat i { display: block; height: 6px; margin: 3px; border-radius: 3px; background: #60a5fa; width: 60%; animation: typing 2.5s infinite; }
-.s-chat i:nth-child(2n) { margin-left: auto; background: #4ade80; }
-.s-seo i:nth-child(1) { position: absolute; left: 4px; top: 3px; width: 26px; height: 5px; background: #fff; border-radius: 3px; }
-.s-seo i:nth-child(2), .s-seo i:nth-child(3), .s-seo i:nth-child(4) { display: block; position: absolute; left: 4px; height: 3px; background: #4ade80; animation: typing 3s infinite; }
-.s-seo i:nth-child(2) { top: 12px; } .s-seo i:nth-child(3) { top: 18px; animation-delay: .5s; background: #60a5fa; } .s-seo i:nth-child(4) { top: 24px; animation-delay: 1s; background: #60a5fa; }
+/* ===== Ish stoli ===== */
+.station { position:relative; width:132px; cursor:pointer; }
+.scene { position:relative; width:132px; height:76px; }
+.seat { position:absolute; left:88px; top:36px; width:1px; height:1px; }
+.chairback { position:absolute; left:66px; top:0; width:44px; height:42px; border-radius:12px 12px 4px 4px; background:linear-gradient(#4a4560,#353048); z-index:0; }
+.desk { position:absolute; left:0; right:0; top:34px; height:42px; z-index:3; }
+.desk .top { height:9px; border-radius:4px; background:linear-gradient(#d6a77a,#c08d63); box-shadow:0 1px 0 #e6bf98 inset; }
+.desk .front { height:33px; margin:0 4px; background:linear-gradient(#a8754e,#8d5f3e); border-radius:0 0 4px 4px; position:relative; box-shadow:0 5px 8px #0002; }
+.desk .front::before, .desk .front::after { content:""; position:absolute; top:9px; width:16px; height:3px; border-radius:2px; background:#5e3d26; }
+.desk .front::before { left:14px; } .desk .front::after { right:14px; }
+.monitor { position:absolute; left:6px; top:-8px; width:60px; height:40px; background:#1a1a1f; border-radius:4px; padding:3px; z-index:4; box-shadow:0 2px 0 #0003; }
+.monitor::after { content:""; position:absolute; left:26px; bottom:-8px; width:8px; height:8px; background:#2c2c33; }
+.monitor .base { position:absolute; left:18px; bottom:-10px; width:24px; height:3px; background:#2c2c33; border-radius:2px; }
+.screen { position:relative; width:100%; height:100%; background:#0d1117; overflow:hidden; border-radius:2px; }
+.station.on .screen { box-shadow:0 0 12px #6cf3; }
+.station:not(.on) .screen > * { display:none; }
+.station:not(.on) .screen { background:#06070a; }
+.kb { position:absolute; left:72px; top:35px; width:30px; height:5px; background:#e8e8ea; border-radius:2px; z-index:4; box-shadow:0 1px 0 #999; }
+.mouse { position:absolute; left:106px; top:35px; width:6px; height:5px; background:#eee; border-radius:3px; z-index:4; }
+.deskitem { position:absolute; right:4px; top:24px; z-index:4; font-size:13px; line-height:1; }
+.prog { width:110px; height:5px; background:#0002; border-radius:3px; margin:8px auto 0; overflow:hidden; }
+.prog i { display:block; height:100%; width:0; background:var(--ok); transition:width .5s linear; }
+.note { font-size:10px; color:#5f5770; margin-top:3px; text-align:center; min-height:14px; line-height:1.25; }
 
-/* ===== Project menejer ===== */
-#pm { position: absolute; z-index: 20; width: 40px; height: 70px; transition: left 2.6s linear, top 2.6s linear; pointer-events: none; }
-#pm .tag { position: absolute; bottom: 74px; left: 50%; transform: translateX(-50%); background: #e63946; }
-#pm .bubble { top: -52px; opacity: 0; }
-#pm.talk .bubble { opacity: 1; }
-#pm .person { left: 6px; bottom: 0; height: 70px; }
-#pm .leg { position: absolute; top: 42px; width: 8px; height: 20px; background: #2b2d42; border-radius: 2px; transform-origin: top center; }
-#pm .leg.l { left: 5px; } #pm .leg.r { left: 15px; }
-#pm .leg::after { content: ""; position: absolute; bottom: -3px; left: -1px; width: 10px; height: 4px; background: #111; border-radius: 2px; }
-#pm.walk .leg.l { animation: step .4s infinite alternate; } #pm.walk .leg.r { animation: step .4s infinite alternate-reverse; }
-#pm.walk .arm.l { animation: step .4s infinite alternate-reverse; } #pm.walk .arm.r { animation: step .4s infinite alternate; }
-@keyframes step { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
-#pm .clip { position: absolute; left: 22px; top: 30px; width: 10px; height: 13px; background: #fff; border: 2px solid #8b5e3c; border-radius: 1px; z-index: 3; }
+/* ekranlar */
+.s-text i { display:block; height:3px; margin:3px 2px; background:#9ad; border-radius:1px; animation:typing 3s steps(8) infinite; }
+.s-text i:nth-child(2){animation-delay:.6s} .s-text i:nth-child(3){animation-delay:1.2s} .s-text i:nth-child(4){animation-delay:1.8s}
+@keyframes typing { from{width:0} to{width:90%} }
+.s-design { background:#f7f3ea !important; }
+.s-design i { position:absolute; border-radius:2px; animation:hue 4s infinite; }
+.s-design i:nth-child(1){left:3px;top:3px;width:20px;height:15px;background:#e76f51}
+.s-design i:nth-child(2){left:27px;top:4px;width:14px;height:14px;border-radius:50%;background:#2a9d8f;animation-delay:1s}
+.s-design i:nth-child(3){left:4px;top:21px;width:40px;height:5px;background:#264653;animation-delay:2s}
+.s-design i:nth-child(4){left:34px;top:19px;width:4px;height:6px;background:#000;border-radius:0;animation:cursor 3s infinite}
+@keyframes hue { 50%{filter:hue-rotate(120deg)} }
+@keyframes cursor { 50%{transform:translate(-24px,-10px)} }
+.s-video i:nth-child(1){position:absolute;left:3px;top:3px;right:3px;height:16px;background:linear-gradient(90deg,#355070,#6d597a,#b56576);animation:hue 3s infinite}
+.s-video i:nth-child(2){position:absolute;left:3px;right:3px;bottom:4px;height:4px;background:#e9c46a}
+.s-video i:nth-child(3){position:absolute;left:3px;right:12px;bottom:10px;height:3px;background:#2a9d8f}
+.s-video i:nth-child(4){position:absolute;bottom:2px;width:2px;height:15px;background:#e63946;animation:play 2.5s linear infinite}
+@keyframes play { from{left:3px} to{left:48px} }
+.s-chart { display:flex; align-items:flex-end; gap:3px; padding:3px; }
+.s-chart i { flex:1; background:#4ade80; animation:bar 1.8s infinite alternate; }
+.s-chart i:nth-child(2){animation-delay:.3s;background:#60a5fa} .s-chart i:nth-child(3){animation-delay:.6s} .s-chart i:nth-child(4){animation-delay:.9s;background:#fbbf24}
+@keyframes bar { from{height:20%} to{height:95%} }
+.s-ads i:nth-child(1){position:absolute;left:3px;top:3px;width:20px;height:26px;background:#fff;border-radius:2px}
+.s-ads i:nth-child(1)::after{content:"AD";position:absolute;left:4px;top:8px;font-size:7px;color:#f4a261;font-weight:900;font-style:normal}
+.s-ads i:nth-child(2){position:absolute;left:27px;bottom:5px;width:20px;height:2px;background:#4ade80;transform-origin:left;animation:rise 2s infinite alternate}
+@keyframes rise { from{transform:rotate(-10deg)} to{transform:rotate(-45deg)} }
+.s-social { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; padding:3px; }
+.s-social i { background:#e85d9a; border-radius:1px; animation:hue 3s infinite; }
+.s-social i:nth-child(2n){animation-delay:1s;background:#f4a261}
+.s-mind i { position:absolute; width:9px; height:6px; border-radius:2px; background:#b392f0; }
+.s-mind i:nth-child(1){left:20px;top:12px;width:12px;background:#fbbf24;animation:hue 2s infinite}
+.s-mind i:nth-child(2){left:3px;top:3px} .s-mind i:nth-child(3){left:40px;top:3px} .s-mind i:nth-child(4){left:3px;top:24px} .s-mind i:nth-child(5){left:40px;top:24px}
+.s-chat i { display:block; height:6px; margin:3px; border-radius:3px; background:#60a5fa; width:60%; animation:typing 2.5s infinite; }
+.s-chat i:nth-child(2n){margin-left:auto;background:#4ade80}
+.s-seo i:nth-child(1){position:absolute;left:4px;top:3px;width:30px;height:5px;background:#fff;border-radius:3px}
+.s-seo i:nth-child(n+2){position:absolute;left:4px;height:3px;background:#60a5fa;animation:typing 3s infinite}
+.s-seo i:nth-child(2){top:12px;background:#4ade80} .s-seo i:nth-child(3){top:18px;animation-delay:.5s} .s-seo i:nth-child(4){top:24px;animation-delay:1s}
+
+/* ===== Dam olish zonasi ===== */
+.lounge { grid-column:1/-1; position:relative; height:190px; border-radius:14px; background:color-mix(in srgb,#8fb996 16%,transparent); border:2px dashed #8fb99688; }
+.lounge .lt { position:absolute; left:12px; top:8px; font-size:12px; font-weight:800; color:#3f6b48; }
+.lounge .it { position:absolute; bottom:22px; }
+.spot { position:absolute; width:1px; height:1px; }
+.cooler { width:34px; height:96px; }
+.cooler .bottle { position:absolute; left:5px; top:0; width:24px; height:34px; border-radius:10px 10px 4px 4px; background:linear-gradient(90deg,#8ecdf5,#c9ecff,#8ecdf5); opacity:.95; }
+.cooler .body { position:absolute; left:0; top:32px; width:34px; height:64px; background:linear-gradient(90deg,#f4f4f6,#fff,#e4e4ea); border-radius:4px; box-shadow:0 4px 0 #0002; }
+.cooler .body::before { content:""; position:absolute; left:8px; top:12px; width:6px; height:5px; background:#3b82f6; border-radius:1px; box-shadow:12px 0 0 #ef4444; }
+.counter { width:120px; height:58px; background:linear-gradient(#efe9df,#d8cfc0); border-radius:6px 6px 3px 3px; box-shadow:0 5px 0 #a8977b; }
+.counter .mach { position:absolute; left:14px; top:-38px; width:34px; height:40px; background:linear-gradient(#3b3b44,#222228); border-radius:5px 5px 2px 2px; }
+.counter .mach::after { content:""; position:absolute; left:10px; top:12px; width:14px; height:3px; background:#ffc93c; border-radius:2px; }
+.counter .mugs { position:absolute; left:58px; top:-14px; font-size:14px; }
+.sofa { width:170px; height:76px; }
+.sofa .back { position:absolute; left:0; right:0; top:0; height:36px; background:linear-gradient(#5e7fbf,#4b6aa8); border-radius:14px 14px 4px 4px; z-index:0; }
+.sofa .front { position:absolute; left:-6px; right:-6px; top:30px; height:46px; background:linear-gradient(#6e8fd0,#5676b6); border-radius:10px; z-index:3; box-shadow:0 5px 0 #0002; }
+.table { width:38px; height:66px; }
+.table::before { content:""; position:absolute; left:0; top:0; width:38px; height:8px; background:#fff; border-radius:50%; box-shadow:0 2px 0 #bbb; z-index:3; }
+.table::after { content:""; position:absolute; left:17px; top:6px; width:4px; height:60px; background:#999; z-index:2; }
+.bigplant { font-size:42px; line-height:1; }
+
+/* ===== Odamchalar ===== */
+.agents { position:absolute; inset:0; pointer-events:none; }
+.ag { position:absolute; width:50px; height:87px; z-index:6; pointer-events:auto; cursor:pointer; transition-property:left,top; transition-timing-function:linear; }
+.ag.seated { z-index:1; }
+.ag svg { position:absolute; left:0; top:0; width:50px; height:87px; overflow:visible; }
+.ag.left svg { transform:scaleX(-1); }
+.ag svg * { transform-box:view-box; }
+.ag .nm { position:absolute; bottom:calc(100% - 2px); left:50%; transform:translateX(-50%); text-align:center; white-space:nowrap; pointer-events:none; }
+.ag .nm b { display:block; font-size:10.5px; color:#fff; background:#1f1b2ccc; padding:1px 7px; border-radius:7px 7px 0 0; }
+.ag .nm b i { font-style:normal; margin-right:3px; }
+.ag .nm span { display:block; font-size:9px; color:#2b2540; background:#ffffffd9; padding:0 6px 1px; border-radius:0 0 7px 7px; max-width:132px; overflow:hidden; text-overflow:ellipsis; }
+.ag .bb { position:absolute; bottom:calc(100% + 30px); left:50%; transform:translateX(-50%); background:#fff; color:#222; font-size:10.5px; padding:4px 8px; border-radius:10px; white-space:nowrap; max-width:220px; overflow:hidden; text-overflow:ellipsis; box-shadow:0 2px 6px #0003; opacity:0; transition:opacity .25s; pointer-events:none; z-index:50; }
+.ag:hover .bb, .ag.say .bb, .ag.hand .bb { opacity:1; }
+.ag.hand .bb { background:#ffc93c; font-weight:700; }
+#pm .bb { white-space:normal; width:max-content; max-width:240px; }
+.ag .zz { position:absolute; left:34px; top:-4px; display:none; font-weight:800; color:#6d6a8a; pointer-events:none; }
+.ag.sleep .zz { display:block; }
+.zz span { position:absolute; animation:zz 2.6s infinite; opacity:0; }
+.zz span:nth-child(2){animation-delay:.85s} .zz span:nth-child(3){animation-delay:1.7s}
+@keyframes zz { 0%{opacity:0;transform:translate(0,10px) scale(.7)} 30%{opacity:1} 100%{opacity:0;transform:translate(20px,-28px) scale(1.4)} }
+.wake { position:absolute; left:18px; top:-30px; font-size:22px; font-weight:900; color:#e63946; animation:pop .9s ease-out forwards; pointer-events:none; }
+@keyframes pop { 0%{transform:scale(.3);opacity:0} 30%{transform:scale(1.3);opacity:1} 100%{transform:translateY(-14px);opacity:0} }
+
+/* tana harakatlari */
+.ag .ar.l { transform-origin:11px 29px; } .ag .ar.r { transform-origin:33px 29px; }
+.ag .lg.l { transform-origin:18px 50px; } .ag .lg.r { transform-origin:26px 50px; }
+.ag .hd { transform-origin:22px 26px; transition:transform .5s; }
+.ag .ar { transition:transform .4s; }
+.ag .ec, .ag .cup, .ag .phone, .ag .mo-h, .ag .mo-t, .ag .lids, .ag .sweat { display:none; }
+.ag.walk svg { animation:bob .42s infinite alternate; }
+.ag.walk.left svg { animation:bobL .42s infinite alternate; }
+@keyframes bob { from{transform:translateY(0)} to{transform:translateY(-2px)} }
+@keyframes bobL { from{transform:scaleX(-1) translateY(0)} to{transform:scaleX(-1) translateY(-2px)} }
+.ag.walk .lg.l, .ag.walk .ar.r { animation:swing .42s infinite alternate; }
+.ag.walk .lg.r, .ag.walk .ar.l { animation:swing .42s infinite alternate-reverse; }
+@keyframes swing { from{transform:rotate(-24deg)} to{transform:rotate(24deg)} }
+.ag.work .ar.l { animation:tL .24s infinite alternate; }
+.ag.work .ar.r { animation:tR .21s infinite alternate; }
+.ag.work.tired .ar.l, .ag.work.tired .ar.r { animation-duration:.6s; }
+@keyframes tL { from{transform:rotate(-18deg)} to{transform:rotate(-26deg)} }
+@keyframes tR { from{transform:rotate(18deg)} to{transform:rotate(26deg)} }
+.ag.work .hd { animation:nod 3.2s infinite; }
+@keyframes nod { 0%,100%{transform:rotate(0)} 50%{transform:rotate(-4deg)} }
+.ag.idle svg { animation:breath 3s infinite; }
+@keyframes breath { 50%{transform:translateY(1px)} }
+.ag.sleep .hd { transform:translateY(8px) rotate(-16deg); }
+.ag.sleep .eo { display:none; } .ag.sleep .ec { display:inline; }
+.ag.sleep .ar.l { transform:rotate(-78deg); } .ag.sleep .ar.r { transform:rotate(78deg); }
+.ag.phone .ar.l { transform:rotate(-48deg); } .ag.phone .ar.r { transform:rotate(52deg); }
+.ag.phone .phone { display:inline; } .ag.phone .hd { transform:rotate(6deg) translateY(1px); }
+.ag.stretch .ar.l { transform:rotate(155deg); } .ag.stretch .ar.r { transform:rotate(-155deg); }
+.ag.stretch .eo { display:none; } .ag.stretch .ec { display:inline; }
+.ag.drink .ar.r { transform:rotate(148deg); } .ag.drink .cup.w { display:inline; }
+.ag.coffee .ar.r { transform:rotate(148deg); } .ag.coffee .cup.c { display:inline; }
+.ag.talk .hd { animation:talk .5s infinite alternate; }
+.ag.talk.say .ar.r { animation:gest .7s infinite alternate; }
+@keyframes talk { from{transform:rotate(-3deg)} to{transform:rotate(3deg)} }
+@keyframes gest { from{transform:rotate(25deg)} to{transform:rotate(70deg)} }
+.ag.hand .ar.r { animation:none; transform:rotate(-168deg); }
+.ag.hand .ar.l { animation:none; transform:rotate(-20deg); }
+/* kayfiyat */
+.ag.happy .mo-n { display:none; } .ag.happy .mo-h { display:inline; }
+.ag.tired .mo-n { display:none; } .ag.tired .mo-t { display:inline; }
+.ag.tired .lids, .ag.tired .sweat { display:inline; }
+.ag.tired.sleep .lids { display:none; }
+.ag.tired .hd { transform:translateY(1.5px) rotate(-3deg); }
+
+#pm { z-index:60; }
+#pm .nm b { background:#e63946; }
 
 /* ===== Panellar ===== */
-.panels { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 16px; margin: 0 16px 24px; }
-.panel { background: var(--panel); border: 2px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
-.panel h2 { margin: 0 0 10px; font-size: 14px; color: var(--accent); }
-.panel form { display: grid; gap: 8px; }
-.panel form input, .panel form select { width: 100%; }
-.list { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow: auto; font-size: 12px; }
-.list li { padding: 6px 0; border-bottom: 1px dashed var(--line); display: flex; gap: 8px; align-items: baseline; }
-.list li .who { color: var(--muted); flex: none; }
-.list li.me .who::after { content: " · siz"; color: var(--accent); }
-.list li button { margin-left: auto; padding: 0 6px; font-size: 11px; }
-.empty { color: var(--muted); font-size: 12px; }
-.hint { color: var(--muted); font-size: 11.5px; margin: 0 16px 16px; }
-
-/* modal */
-dialog { background: var(--panel); color: var(--text); border: 2px solid var(--accent); border-radius: 10px; max-width: 420px; width: 92vw; }
-dialog::backdrop { background: #0008; }
-dialog h3 { margin: 0 0 6px; }
-dialog .bar { height: 8px; background: #0004; border-radius: 4px; overflow: hidden; margin: 6px 0 10px; }
-dialog .bar i { display: block; height: 100%; background: var(--ok); }
-dialog ul { padding-left: 18px; margin: 4px 0 10px; font-size: 12px; }
-dialog form { display: flex; gap: 6px; }
-dialog form input { flex: 1; }
-
-@media (max-width: 960px) {
-  .panels { grid-template-columns: 1fr; }
-  .floor { grid-template-columns: 1fr; }
-}
-@media (max-width: 420px) { .dept .grid { grid-template-columns: repeat(2, 1fr); } }
+.panels { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin:0 16px 20px; }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; min-width:0; }
+.panel h2 { margin:0 0 10px; font-size:14px; color:var(--accent); display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+.panel h2 button { font-size:11.5px; padding:3px 8px; color:var(--text); }
+.panel form { display:grid; gap:8px; } .panel form input, .panel form select { width:100%; }
+.list { list-style:none; margin:0; padding:0; max-height:300px; overflow:auto; font-size:12.5px; }
+.list li { padding:6px 0; border-bottom:1px dashed var(--line); display:flex; gap:8px; align-items:baseline; }
+.list li .who { color:var(--muted); flex:none; max-width:45%; }
+.list li.me .who::after { content:" · siz"; color:var(--accent); }
+.list li button { margin-left:auto; padding:0 7px; font-size:11px; flex:none; }
+.list li.ans { opacity:.75; } .list li.ans i { color:var(--ok); font-style:normal; }
+.list li.new { color:#fff; font-weight:600; }
+.empty { color:var(--muted); font-size:12px; }
+.hint { color:var(--muted); font-size:12px; margin:0 16px 22px; }
+#toast { position:fixed; right:16px; bottom:16px; max-width:340px; background:#24212f; border:1px solid var(--accent); border-radius:12px; padding:10px 14px; box-shadow:0 10px 30px #000a; font-size:13px; z-index:200; transform:translateY(140%); transition:transform .35s; }
+#toast.show { transform:none; }
+#toast b { color:var(--accent); display:block; margin-bottom:2px; }
+dialog { background:var(--panel); color:var(--text); border:1px solid var(--accent); border-radius:12px; max-width:440px; width:92vw; }
+dialog::backdrop { background:#000a; }
+dialog h3 { margin:0 0 4px; } dialog .sub { color:var(--muted); font-size:12px; }
+dialog .bar { height:8px; background:#0004; border-radius:4px; overflow:hidden; margin:6px 0 10px; }
+dialog .bar i { display:block; height:100%; background:var(--ok); }
+dialog .en { height:6px; background:#0004; border-radius:3px; overflow:hidden; margin:4px 0 10px; }
+dialog .en i { display:block; height:100%; }
+dialog ul { padding-left:18px; margin:4px 0 10px; font-size:12.5px; }
+dialog .q { background:#ffc93c22; border-left:4px solid var(--accent); padding:8px 10px; border-radius:6px; margin:10px 0; }
+dialog textarea { width:100%; min-height:70px; }
+dialog form { display:flex; gap:6px; } dialog form input { flex:1; }
+.row { display:flex; justify-content:flex-end; gap:8px; margin-top:10px; flex-wrap:wrap; }
+@media (max-width:980px) { .panels { grid-template-columns:1fr; } .floor { grid-template-columns:1fr; } }
+@media (max-width:470px) { .dept .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .floor { padding:20px 6px; } .lounge { height:300px; } }
 </style>
 </head>
 <body>
@@ -191,354 +249,677 @@ dialog form input { flex: 1; }
     <span class="stats" id="stats"></span>
     <button id="addRoomBtn" title="Yangi loyiha uchun xona ochish">➕ Yangi loyiha</button>
     <button id="autoBtn" title="Bo'sh xodim navbatdagi vazifani o'zi oladi">⚙️ Avto: ON</button>
-    <button id="speedBtn" title="Simulyatsiya tezligi">⏩ 1x</button>
+    <button id="speedBtn" title="Ish tezligi">⏩ 1x</button>
     <button id="pauseBtn">⏸ Pauza</button>
-    <button id="resetBtn" title="Hamma narsani rejalardagi boshlang'ich holatga qaytarish">↺ Qayta</button>
+    <button id="resetBtn" title="Boshlang'ich holatga qaytarish">↺ Qayta</button>
   </div>
 </header>
 
 <nav class="tabs" id="tabs"></nav>
 
 <div class="office" id="office">
-  <div class="lobby"><div class="lbl">🛋 Qabulxona · yo'lak</div><div class="coffee">☕</div><div class="pmdesk">Project menejer stoli</div><div class="coffee">🪴</div><div id="pmHome"></div></div>
+  <div class="lobby"><div class="lbl">QABULXONA</div><div class="bigplant">🪴</div><div class="reception"><b>LOBAR</b>AGENCY</div><div class="bigplant">🪴</div><div id="pmHome"></div></div>
   <div id="rooms"></div>
-  <div id="pm">
-    <div class="tag"><span class="dot" style="background:#fff"></span>Project menejer</div>
-    <div class="bubble" id="pmSay"></div>
-    <div class="person" style="--skin:#f1c7a3;--hair:#2b1d14;--shirt:#1d3557">
-      <div class="leg l"></div><div class="leg r"></div>
-      <div class="arm l"></div><div class="arm r"></div>
-      <div class="body"></div>
-      <div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="mouth"></div></div>
-      <div class="clip"></div>
-    </div>
-  </div>
 </div>
 
 <div class="panels">
+  <div class="panel">
+    <h2>🧑‍💼 Project menejer xabarlari <button id="notifBtn">🔔 Bildirishnomani yoqish</button></h2>
+    <ul class="list" id="pmlog"></ul>
+  </div>
+  <div class="panel">
+    <h2>✋ Xodimlarning savollari <button id="copyAns" title="Javoblarni nusxalab, Claude'ga yuboring">📋 Javoblarni nusxalash</button></h2>
+    <ul class="list" id="questions"></ul>
+  </div>
   <div class="panel">
     <h2>📝 Yangi topshiriq berish</h2>
     <form id="taskForm">
       <select id="fRoom"></select>
       <select id="fRole"></select>
       <input id="fTitle" placeholder="Masalan: Yangi yil uchun Reels ssenariysi" required maxlength="120">
-      <select id="fDur">
-        <option value="40">Qisqa vazifa</option>
-        <option value="75" selected>O'rtacha vazifa</option>
-        <option value="120">Katta vazifa</option>
-      </select>
+      <select id="fDur"><option value="40">Qisqa vazifa</option><option value="75" selected>O'rtacha vazifa</option><option value="120">Katta vazifa</option></select>
       <button type="submit">➕ Topshiriq berish</button>
     </form>
   </div>
-  <div class="panel">
-    <h2>📋 Navbatda</h2>
-    <ul class="list" id="queue"></ul>
-  </div>
-  <div class="panel">
-    <h2>✅ Bajarildi</h2>
-    <ul class="list" id="done"></ul>
-  </div>
+  <div class="panel"><h2>📋 Navbatda</h2><ul class="list" id="queue"></ul></div>
+  <div class="panel"><h2>✅ Bajarildi</h2><ul class="list" id="done"></ul></div>
 </div>
-<p class="hint">Bu vizual ofis: vazifalar agentlik rejalaridan olingan, ish jarayoni simulyatsiya qilinadi. Har bir xonada rasmdagi 48 ta lavozim 8 bo'limga bo'lingan. Odamchani bosing — vazifalari ochiladi va unga topshiriq berasiz. Holat shu brauzerda saqlanadi.</p>
+<p class="hint">Vizual ofis: vazifalar agentlik rejalaridan olingan, ish jarayoni simulyatsiya. Odamchani bosing — vazifalari, xarakteri va kayfiyati ochiladi; "PM'dan so'rash" tugmasi bilan project menejerni uning yoniga yuborasiz. Qo'lini ko'targan xodimning savoli bor. Holat shu brauzerda saqlanadi.</p>
+<div id="toast"></div>
 
 <dialog id="dlg"></dialog>
 
 <script src="vazifalar.js"></script>
 <script>
 (() => {
-  const C = window.OFIS;
-  const KEY = "lobarOfis.state";
-  const $ = (s, r = document) => r.querySelector(s);
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const IDLE_BEFORE_NEXT = 4;            // vazifalar orasida uxlab olish (soniya)
-  const ROOM_COLORS = ["#f6e7d2", "#dfeaf5", "#e4f2df", "#f5e1ea", "#efe6fa", "#fff3c4", "#e0f4f3"];
+"use strict";
+const C = window.OFIS;
+const KEY = "lobarOfis.state";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const now = () => performance.now() / 1000;
+const IDLE_BEFORE_NEXT = 4, WALK_SPEED = 150, MAX_AWAY = 7;
+const ROOM_COLORS = ["#d9c3a5", "#c9d4df", "#cddbc6", "#e0c9cf", "#d6cde6", "#e3d7b0"];
 
-  // ---------- Rollar ----------
-  const SKIN = ["#f1c7a3", "#e9b48a", "#f3cfb1", "#d9a27c", "#c68a64"];
-  const HAIR = ["#1f1a17", "#3b2a20", "#5a3825", "#7a3e1d", "#2f2f2f", "#111", "#6b4226", "#a0522d"];
-  const ROLE = {}, ROLE_ORDER = [];
-  C.bolimlar.forEach((b, bi) => b.xodimlar.forEach(([key, nom, ekran], i) => {
-    const h = [...key].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
-    ROLE[key] = { key, nom, bolim: b.id, ekran: ekran || b.ekran, teri: SKIN[h % SKIN.length], soch: HAIR[(h >> 3) % HAIR.length],
-      kiyim: `hsl(${(bi * 45 + i * 9 + (h % 20)) % 360} 55% 48%)` };
-    ROLE_ORDER.push(key);
-  }));
+// ---------- Rollar, ismlar, kiyim, xarakter ----------
+const F_NAMES = ["Malika","Dilnoza","Madina","Sevara","Nilufar","Shahnoza","Zarina","Kamola","Feruza","Gulnora","Mohira","Nodira","Laylo","Munisa","Sabina","Charos","Dildora","Zebo","Ozoda","Robiya","Durdona","Mohinur","Gulshan","Hilola","Yulduz","Barno","Nargiza","Asal","Shirin","Umida","Maftuna"];
+const M_NAMES = ["Jasur","Bekzod","Sardor","Aziz","Javohir","Otabek","Doniyor","Sherzod","Ulug'bek","Farrux","Akmal","Rustam","Islom","Bobur","Diyor","Sanjar","Temur","Shoxrux","Abdulloh","Elyor","Nodir","Komil","Behruz","Asadbek","Ravshan","Anvar","Jahongir","Mirjalol","Ilhom","Zafar","Alisher"];
+const SKIN = ["#f3cfb1","#eec09a","#e2ab84","#d29a72","#bf845d"];
+const HAIR = ["#1d1714","#2e211a","#4a2f20","#6b4226","#2a2a2a","#5a3825"];
+const HIJAB = ["#3b5ba5","#8c4a7a","#2f6d5c","#b9855a","#5b4a8a","#c45a5a"];
+const OUTFIT_BY_DEPT = {
+  bozor: ["shirt", ["#dbe7f5","#e8f0dc","#f3e2d4"], ["lanyard"]],
+  strategiya: ["blazer", ["#2f3e5c","#4a3b5c","#3c4a3a"], []],
+  seo: ["tee", ["#3d7a5a","#4a6fa5","#7a5a9a"], ["glasses"]],
+  kontent: ["sweater", ["#b5654a","#c9a227","#6b8f71"], []],
+  smm: ["tee", ["#e85d9a","#f08a5d","#9b5de5"], []],
+  lid: ["hoodie", ["#f4a261","#2a9d8f","#e76f51"], []],
+  analitika: ["shirt", ["#cfe0f3","#e6e6f0","#d9ecef"], ["glasses","lanyard"]],
+  operatsiya: ["suit", ["#22293a","#2d2a3e","#33323a"], ["tie"]]
+};
+const OUTFIT_BY_ROLE = {
+  video: ["vest", ["#5b6b4a"], ["cap"]],
+  editor: ["hoodie", ["#22222a"], ["headphones"]],
+  image: ["tee", ["#f2f2f2"], ["beret"]],
+  "ad-creative": ["tee", ["#ffd166"], ["beret"]],
+  "free-tools": ["hoodie", ["#30343f"], ["glasses"]],
+  ads: ["hoodie", ["#1f6feb"], []],
+  "lead-nurture": ["shirt", ["#e9eef7"], ["headset"]],
+  revops: ["shirt", ["#e8f1fb"], ["headset","tie"]],
+  "copy-editing": ["sweater", ["#7d6b91"], ["glasses"]],
+  "co-marketing": ["blazer", ["#5c4033"], []],
+  "marketing-council": ["suit", ["#1c1c24"], ["tie","glasses"]],
+  aso: ["tee", ["#3a86ff"], []],
+  analytics: ["shirt", ["#ffffff"], ["glasses","lanyard","tie"]]
+};
+// xarakterlar: xatti-harakat koeffitsiyentlari
+const TRAITS = [
+  { id: "quvnoq", nom: "Quvnoq", emoji: "😄", desc: "doim kulib yuradi, hamkasblari bilan gaplashishni yaxshi ko'radi", chat: 2, sleep: .6, coffee: 1, tire: 1, happy: true },
+  { id: "ishchan", nom: "Ishchan", emoji: "💪", desc: "kam dam oladi, ishni tez bitiradi", chat: .5, sleep: .3, coffee: .8, tire: .7 },
+  { id: "uyquchan", nom: "Uyquchan", emoji: "🥱", desc: "bo'sh qoldimi — darrov mudraydi", chat: .8, sleep: 2.4, coffee: 1.3, tire: 1.4 },
+  { id: "gapdon", nom: "Gapdon", emoji: "🗣️", desc: "har tanaffusda kimdir bilan suhbat quradi", chat: 2.8, sleep: .7, coffee: 1, tire: 1 },
+  { id: "qahvasevar", nom: "Qahvasevar", emoji: "☕", desc: "qahva mashinasining eng yaqin do'sti", chat: 1, sleep: .8, coffee: 2.6, tire: 1.1 },
+  { id: "perfeksionist", nom: "Perfeksionist", emoji: "🎯", desc: "sekinroq, lekin juda puxta ishlaydi", chat: .6, sleep: .6, coffee: 1, tire: 1.2, slow: 1.2 },
+  { id: "sportchi", nom: "Sportchi", emoji: "🏃", desc: "tez-tez kerishib, badantarbiya qiladi", chat: 1, sleep: .4, coffee: .6, tire: .8, stretch: 3 },
+  { id: "xotirjam", nom: "Xotirjam", emoji: "😌", desc: "shoshilmaydi, hech qachon asabiylashmaydi", chat: 1, sleep: 1, coffee: 1, tire: .9 }
+];
+const ROLE = {}, ROLE_ORDER = [];
+C.bolimlar.forEach(b => b.xodimlar.forEach(([key, nom, ekran]) => { ROLE[key] = { key, nom, bolim: b.id, ekran: ekran || b.ekran }; ROLE_ORDER.push(key); }));
+const hash = s => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+const SUGGEST = {
+  "seo-audit": "saytingizning SEO auditini", "ai-seo": "saytni AI qidiruvga moslashni", "competitors": "\"Lobar vs boshqa SMMchi\" taqqoslash sahifasini",
+  "marketing-psychology": "bio va taklif uchun psixologik triggerlarni", "market-analysis": "Xorazm SMM bozori tahlilini", "product-marketing": "xizmatlar pozitsiyasini",
+  "marketing-loops": "keys → kontent → mijoz halqasini", "keyword-research": "\"SMM Urganch\" kalit so'zlarini", "programmatic-seo": "shaharlar bo'yicha xizmat sahifalarini",
+  "marketing-ideas": "yangi Reels g'oyalarini", "directory-submissions": "2GIS va Google Maps profilini", "community-marketing": "Telegram chat faollik g'oyalarini",
+  "influencer-marketing": "Xorazm blogerlari ro'yxatini", "free-tools": "\"Reklama byudjeti kalkulyatori\"ni", "co-marketing": "hamkor bizneslar bilan aksiyani",
+  "lead-nurture": "kalit so'z yozganlarga 5 kunlik xabarlar zanjirini", "cro": "profil va sayt konversiya auditini", "ab-testing": "ikki xil bio A/B testini",
+  "signup": "bepul audit formasini soddalashtirishni", "popups": "saytga \"Bepul audit\" popupini", "paywalls": "xizmat paketlari jadvalini",
+  "launch": "2-mavsum launch rejasini", "public-relations": "mahalliy OAV uchun press-relizni", "aso": null,
+  "content-strategy": "keyingi oy rubrikalarini", "copy-editing": "eski postlar matnini yangilashni", "linkedin": "LinkedIn profil yangilashni"
+};
 
-  // ---------- Holat ----------
-  function seedRoom(S, r, custom) {
-    S.rooms.push({ id: r.id, nom: r.nom, rang: r.rang, uyquIzoh: r.uyquIzoh || {}, custom: !!custom });
-    let n = 0;
-    for (const k of ROLE_ORDER) S.workers[r.id + ":" + k] = { room: r.id, role: k, cur: null, idle: (n++ % 4) - 1 };
-    for (const [role, title, d] of r.vazifalar || []) if (ROLE[role]) S.queue.push({ id: ++S.seq, room: r.id, role, title, d, p: 0, src: "reja" });
+function makeLook(roomIdx, role, idx) {
+  const h = hash(role + ":" + roomIdx), female = (h >>> 2) % 2 === 0, g = roomIdx * 53 + idx, R = ROLE[role];
+  const [type, cols, acc] = OUTFIT_BY_ROLE[role] || OUTFIT_BY_DEPT[R.bolim];
+  const accs = acc.filter(a => !(a === "tie" && female));
+  let style = female ? ["long","bun","ponytail","hijab","long","bun","hijab"][h % 7] : ["short","side","curly","short","side"][h % 5];
+  if (style === "hijab" && accs.some(a => ["cap","beret","headphones"].includes(a))) style = "bun";
+  return {
+    female, name: (female ? F_NAMES : M_NAMES)[(g * 7) % 31], trait: TRAITS[(h >>> 9) % TRAITS.length],
+    skin: SKIN[(h >>> 4) % SKIN.length], hair: HAIR[(h >>> 6) % HAIR.length], hijab: HIJAB[(h >>> 3) % HIJAB.length],
+    style, beard: !female && (h >>> 8) % 4 === 0, type, main: cols[(h >>> 5) % cols.length], acc: accs,
+    pants: female ? ["#2d3142","#4f3b2f","#3a3a55"][(h >>> 7) % 3] : ["#2b2d42","#3d3d3d","#46505e"][(h >>> 7) % 3]
+  };
+}
+const shade = (hex, p) => { const n = parseInt(hex.slice(1), 16); const f = c => Math.max(0, Math.min(255, Math.round(c * (1 + p)))); return "#" + [n >> 16, (n >> 8) & 255, n & 255].map(f).map(x => x.toString(16).padStart(2, "0")).join(""); };
+
+function personSVG(L, extra = "") {
+  const s = L.skin, hc = L.hair, m = L.main, d = shade(m, -0.28);
+  const sleeve = L.type === "vest" ? "#e9e4d8" : m, torsoFill = L.type === "vest" ? "#e9e4d8" : m;
+  let back = "", det = "", acc = "";
+  if (L.style === "long") back = `<path d="M12.6 15 Q11.5 31 14.5 37 L29.5 37 Q32.5 31 31.4 15 Z" fill="${hc}"/>`;
+  if (L.style === "hijab") back = `<path d="M10.6 18 Q10 5.5 22 5 Q34 5.5 33.4 18 L35.5 33 Q22 40 8.5 33 Z" fill="${L.hijab}"/>`;
+  const front = {
+    short: `<path d="M13 16.5 Q12.5 7 22 7 Q31.5 7 31 16.5 Q29 11.5 22 11 Q16 11 13 16.5Z" fill="${hc}"/>`,
+    side: `<path d="M13 17 Q12 6.5 22.5 7 Q32 7.5 31 17 Q30 12 26 11 Q20 13 13 17Z" fill="${hc}"/>`,
+    curly: `<g fill="${hc}"><circle cx="14.5" cy="12" r="3.6"/><circle cx="18" cy="8.6" r="3.8"/><circle cx="22.5" cy="7.6" r="3.9"/><circle cx="27" cy="8.8" r="3.7"/><circle cx="29.8" cy="12.4" r="3.4"/></g>`,
+    long: `<path d="M13 18 Q12 7 22 7 Q32 7 31 18 Q29 11 24 10.5 Q19 12 13 18Z" fill="${hc}"/>`,
+    bun: `<circle cx="22" cy="5.4" r="3.7" fill="${hc}"/><path d="M13 17.5 Q12 7 22 7 Q32 7 31 17.5 Q28.5 11.5 22 11.2 Q15.5 11.5 13 17.5Z" fill="${hc}"/>`,
+    ponytail: `<path d="M29.5 10 Q38 13.5 33.5 27 Q32.5 18 29 14Z" fill="${hc}"/><path d="M13 17.5 Q12 7 22 7 Q32 7 31 17.5 Q28.5 11.5 22 11.2 Q15.5 11.5 13 17.5Z" fill="${hc}"/>`,
+    hijab: `<path d="M12.4 17.5 Q12.4 7.2 22 7.2 Q31.6 7.2 31.6 17.5 Q29 12.2 22 12.2 Q15 12.2 12.4 17.5Z" fill="${shade(L.hijab, -0.12)}"/>`
+  }[L.style];
+  if (L.type === "blazer" || L.type === "suit") {
+    det += `<path d="M19 26.3 L22 35 L25 26.3Z" fill="#fff"/>`;
+    if (L.acc.includes("tie")) det += `<path d="M21.2 27.2 h1.6 l.9 6.8 -1.7 2 -1.7-2z" fill="#c1121f"/>`;
+    det += `<path d="M19 26.3 L22 36 L17.6 31.5 L16.2 27.2Z" fill="${d}"/><path d="M25 26.3 L22 36 L26.4 31.5 L27.8 27.2Z" fill="${d}"/><circle cx="22" cy="41" r=".9" fill="${d}"/><circle cx="22" cy="45" r=".9" fill="${d}"/><path d="M26.5 33 h3" stroke="#fff" stroke-width="1.1"/>`;
+  } else if (L.type === "shirt") {
+    det += `<path d="M18.4 26 L22 29.6 L25.6 26 L24.2 29 L22 30.4 L19.8 29Z" fill="#fff" stroke="${d}" stroke-width=".3"/><path d="M22 30.4 V51" stroke="${d}" stroke-width=".6"/><circle cx="22" cy="35" r=".5" fill="${d}"/><circle cx="22" cy="40" r=".5" fill="${d}"/><circle cx="22" cy="45" r=".5" fill="${d}"/>`;
+    if (L.acc.includes("tie")) det += `<path d="M21.2 29.6 h1.6 l.9 7 -1.7 2 -1.7-2z" fill="#1d3557"/>`;
+  } else if (L.type === "hoodie") {
+    det += `<path d="M14.5 27.5 Q22 22 29.5 27.5 Q22 31.5 14.5 27.5Z" fill="${d}"/><path d="M20 29.5 v6.5 M24 29.5 v6.5" stroke="#fff" stroke-width=".7" stroke-linecap="round"/><path d="M16 46 h12 l-1.8 -5 h-8.4z" fill="${d}" opacity=".55"/>`;
+  } else if (L.type === "sweater") {
+    det += `<path d="M18.4 26 L20 28.6 L22 27 L24 28.6 L25.6 26" fill="#fff"/><path d="M18 26.5 Q22 30 26 26.5" stroke="${d}" stroke-width="1.4" fill="none"/><rect x="12" y="49" width="20" height="3" rx="1" fill="${d}" opacity=".6"/><path d="M14 36 h16 M14 39 h16" stroke="${d}" stroke-width=".5" opacity=".5"/>`;
+  } else if (L.type === "tee") {
+    det += `<path d="M18.4 26.2 Q22 29.6 25.6 26.2" stroke="${d}" stroke-width="1" fill="none"/><circle cx="22" cy="38" r="3.2" fill="${shade(m, m > "#999999" ? -0.45 : 0.45)}" opacity=".85"/>`;
+  } else if (L.type === "vest") {
+    det += `<path d="M12 33 Q12 27 18 26.5 L20.6 52 H14 Q12 52 12 50Z" fill="${m}"/><path d="M32 33 Q32 27 26 26.5 L23.4 52 H30 Q32 52 32 50Z" fill="${m}"/><rect x="14" y="38" width="4.5" height="4" rx=".6" fill="${d}"/><rect x="25.5" y="38" width="4.5" height="4" rx=".6" fill="${d}"/><rect x="14" y="44" width="4.5" height="4" rx=".6" fill="${d}"/>`;
   }
-  function fresh() {
-    const S = { v: C.VERSION, auto: true, speed: 1, paused: false, rooms: [], workers: {}, queue: [], done: [], seq: 0, view: "all" };
-    for (const r of C.xonalar) seedRoom(S, r);
-    return S;
-  }
-  function load() {
-    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === C.VERSION) return s; } catch (e) {}
-    return fresh();
-  }
-  let S = load();
-  const save = () => localStorage.setItem(KEY, JSON.stringify(S));
-  const roomById = id => S.rooms.find(r => r.id === id);
+  if (L.acc.includes("lanyard")) det += `<path d="M18.6 26.6 L22 38 L25.4 26.6" stroke="#2563eb" stroke-width="1" fill="none"/><rect x="20" y="38" width="4" height="5" rx=".8" fill="#fff" stroke="#999" stroke-width=".4"/>`;
+  if (L.acc.includes("glasses")) acc += `<g stroke="#1b1b1b" stroke-width=".9" fill="#ffffff2a"><circle cx="18.6" cy="17.6" r="2.7"/><circle cx="25.4" cy="17.6" r="2.7"/><path d="M21.3 17.4h1.4" fill="none"/></g>`;
+  if (L.acc.includes("headphones")) acc += `<path d="M12.3 17 Q12.3 4.6 22 4.6 Q31.7 4.6 31.7 17" stroke="#111" stroke-width="2.2" fill="none"/><rect x="10" y="14" width="4.6" height="7.5" rx="2" fill="#e63946"/><rect x="29.4" y="14" width="4.6" height="7.5" rx="2" fill="#e63946"/>`;
+  if (L.acc.includes("beret")) acc += `<ellipse cx="20.5" cy="8" rx="10" ry="3.8" fill="#c1121f" transform="rotate(-12 20.5 8)"/><circle cx="21" cy="4.6" r="1.1" fill="#c1121f"/>`;
+  if (L.acc.includes("cap")) acc += `<path d="M12.6 12.5 Q12.6 4.8 22 4.8 Q31.4 4.8 31.4 12.5 Z" fill="#2b2d42"/><rect x="8" y="10.8" width="7.5" height="2.6" rx="1.3" fill="#2b2d42"/><circle cx="22" cy="5" r=".9" fill="#ffc93c"/>`;
+  if (L.acc.includes("headset")) acc += `<path d="M13 15.5 Q13 5.6 22 5.6 Q31 5.6 31 15.5" stroke="#333" stroke-width="1.6" fill="none"/><rect x="10.8" y="14" width="3.6" height="6.2" rx="1.5" fill="#333"/><path d="M12.6 20 Q13.8 24.2 18.4 23.3" stroke="#333" stroke-width="1" fill="none"/><circle cx="18.7" cy="23.2" r="1.1" fill="#333"/>`;
+  const ears = L.style === "hijab" ? "" : `<circle cx="13.2" cy="18.2" r="2" fill="${s}"/><circle cx="30.8" cy="18.2" r="2" fill="${s}"/>`;
+  const beard = L.beard ? `<path d="M14.6 19 Q15 27.4 22 27.8 Q29 27.4 29.4 19 Q28 24.2 22 24.6 Q16 24.2 14.6 19Z" fill="${hc}" opacity=".9"/>` : "";
+  const lash = L.female ? `<path d="M16.8 16.2 l-.9-.8 M27.2 16.2 l.9-.8" stroke="#222" stroke-width=".6"/>` : "";
+  return `<svg viewBox="0 0 44 76" aria-hidden="true">${back}
+    <g class="lg l"><rect x="15" y="49" width="6.2" height="19" rx="2" fill="${L.pants}"/><rect x="13.4" y="66" width="8.8" height="4.6" rx="2.2" fill="#1b1b1b"/></g>
+    <g class="lg r"><rect x="22.8" y="49" width="6.2" height="19" rx="2" fill="${L.pants}"/><rect x="21.8" y="66" width="8.8" height="4.6" rx="2.2" fill="#1b1b1b"/></g>
+    <rect x="19.6" y="22.5" width="4.8" height="5" fill="${shade(s, -0.08)}"/>
+    <path d="M12 33 Q12 26 19 26 H25 Q32 26 32 33 V50 Q32 52.5 29.5 52.5 H14.5 Q12 52.5 12 50 Z" fill="${torsoFill}"/>${det}
+    <g class="ar l"><rect x="8.4" y="27.6" width="5.2" height="16.6" rx="2.6" fill="${sleeve}"/><circle cx="11" cy="45.2" r="2.5" fill="${s}"/><rect class="phone" x="8.6" y="43" width="4.4" height="7" rx=".8" fill="#222"/>${extra}</g>
+    <g class="ar r"><rect x="30.4" y="27.6" width="5.2" height="16.6" rx="2.6" fill="${sleeve}"/><circle cx="33" cy="45.2" r="2.5" fill="${s}"/>
+      <g class="cup w"><rect x="31" y="45.5" width="4.4" height="5.2" rx=".8" fill="#e8f6ff" stroke="#7fb8d8" stroke-width=".4"/></g>
+      <g class="cup c"><rect x="31" y="45.5" width="4.6" height="5" rx="1" fill="#fff" stroke="#bbb" stroke-width=".4"/><rect x="31.4" y="45.8" width="3.8" height="1.2" fill="#6b4226"/></g></g>
+    <g class="hd">${ears}<circle cx="22" cy="17" r="9" fill="${s}"/>${front}
+      <path d="M17 14.6 q1.6-.9 3.2 0 M23.8 14.6 q1.6-.9 3.2 0" stroke="${shade(hc, 0.1)}" stroke-width=".8" fill="none" stroke-linecap="round"/>
+      <g class="eo"><circle cx="18.6" cy="17.6" r="1.25" fill="#2b2b2b"/><circle cx="25.4" cy="17.6" r="1.25" fill="#2b2b2b"/><circle cx="19" cy="17.2" r=".4" fill="#fff"/><circle cx="25.8" cy="17.2" r=".4" fill="#fff"/>${lash}</g>
+      <g class="lids"><rect x="17" y="15.9" width="3.3" height="1.8" fill="${s}"/><rect x="23.8" y="15.9" width="3.3" height="1.8" fill="${s}"/></g>
+      <g class="ec"><path d="M17.2 17.8 q1.4 1 2.8 0 M24 17.8 q1.4 1 2.8 0" stroke="#2b2b2b" stroke-width=".8" fill="none" stroke-linecap="round"/></g>
+      <circle cx="16.4" cy="20.4" r="1.5" fill="#ff7b7b" opacity=".28"/><circle cx="27.6" cy="20.4" r="1.5" fill="#ff7b7b" opacity=".28"/>
+      ${beard}<path class="mo-n" d="M19.8 21.4 q2.2 1.8 4.4 0" stroke="#8a4b3a" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path class="mo-h" d="M19 20.8 q3 3.8 6 0 z" fill="#7a2e22"/><path class="mo-t" d="M19.9 22.3 q2.1 -.7 4.2 0" stroke="#8a4b3a" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path class="sweat" d="M30.6 10.5 q1.7 2.7 0 3.8 q-1.7-1.1 0-3.8z" fill="#8fd3ff"/>${acc}</g>
+  </svg>`;
+}
 
-  // ---------- Chizish ----------
-  const office = $("#office"), roomsEl = $("#rooms"), pmEl = $("#pm");
-  let stationEls = {};
-  const SCREEN_ITEMS = { text: 4, design: 4, video: 4, chart: 4, ads: 3, social: 6, mind: 5, chat: 4, seo: 4 };
+// ---------- Holat ----------
+function seedRoom(S, r, custom) {
+  S.rooms.push({ id: r.id, nom: r.nom, rang: r.rang, uyquIzoh: r.uyquIzoh || {}, custom: !!custom });
+  for (const k of ROLE_ORDER) S.workers[r.id + ":" + k] = { room: r.id, role: k, cur: null, idle: rnd(0, 3) };
+  for (const [role, title, d] of r.vazifalar || []) if (ROLE[role]) S.queue.push({ id: ++S.seq, room: r.id, role, title, d, p: 0, src: "reja" });
+  (r.savollar || []).forEach(([role, q], i) => { if (ROLE[role]) S.questions.push({ id: r.id + ":q" + i, room: r.id, role, q, a: "" }); });
+}
+function fresh() {
+  const S = { v: C.VERSION, auto: true, speed: 1, paused: false, rooms: [], workers: {}, queue: [], done: [], questions: [], pmLog: [], seq: 0, view: "all" };
+  C.xonalar.forEach(r => seedRoom(S, r));
+  return S;
+}
+function load() { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === C.VERSION) { s.pmLog = s.pmLog || []; return s; } } catch (e) {} return fresh(); }
+let S = load();
+const save = () => localStorage.setItem(KEY, JSON.stringify(S));
+const roomById = id => S.rooms.find(r => r.id === id);
+const openQ = id => { const w = S.workers[id]; return w && S.questions.find(q => q.room === w.room && q.role === w.role && !q.a); };
 
-  function stationHTML(R) {
-    return `<div class="bubble"></div><div class="tag"><span class="dot"></span>${esc(R.nom)}</div>
-      <div class="scene"><div class="chair"></div>
-        <div class="person" style="--skin:${R.teri};--hair:${R.soch};--shirt:${R.kiyim}">
-          <div class="arm l"></div><div class="arm r"></div><div class="body"></div>
-          <div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="mouth"></div></div></div>
-        <div class="monitor"><div class="screen s-${R.ekran}">${"<i></i>".repeat(SCREEN_ITEMS[R.ekran] || 4)}</div></div>
-        <div class="desk"><div class="keyboard"></div><div class="mug"></div></div>
-        <div class="zzz"><span>z</span><span>z</span><span>Z</span></div></div>
-      <div class="prog"><i></i></div><div class="note"></div>`;
-  }
+// ---------- Chizish ----------
+const office = $("#office"), roomsEl = $("#rooms");
+let ST = {}, VIS = {}, SPOTS = {}, LOOK = {};
+const SCREEN_ITEMS = { text: 4, design: 4, video: 4, chart: 4, ads: 2, social: 6, mind: 5, chat: 4, seo: 4 };
+const DESK_ITEMS = { video: "🎥", editor: "🎧", image: "🎨", "ad-creative": "🖍️", social: "📱", analytics: "📊", ads: "🎯", revops: "☎️", "public-relations": "📰", launch: "🚀", copywriting: "📝", "content-calendar": "📅", "influencer-marketing": "🤳", "lead-magnets": "🧲", pricing: "💰", "marketing-plan": "🗂️" };
 
-  function buildRooms() {
-    roomsEl.innerHTML = "";
-    stationEls = {};
-    for (const r of S.rooms) {
-      const sec = document.createElement("section");
-      sec.className = "room"; sec.dataset.room = r.id; sec.style.setProperty("--floor", r.rang);
-      sec.innerHTML = `<div class="wall"><div class="sign">🏷 ${esc(r.nom)}${r.custom ? ` <button data-delroom="${r.id}" title="Xonani o'chirish">🗑</button>` : ""}</div>
-        <div class="window"></div><div class="board" data-board="${r.id}"></div></div><div class="floor"></div><div class="plant">🪴</div>`;
-      const floor = $(".floor", sec);
-      for (const b of C.bolimlar) {
-        const d = document.createElement("div");
-        d.className = "dept"; d.style.setProperty("--dc", b.rang);
-        d.innerHTML = `<h3><span>${esc(b.nom)}</span><span data-dept="${r.id}:${b.id}"></span></h3><div class="grid"></div>`;
-        const grid = $(".grid", d);
-        for (const [key] of b.xodimlar) {
-          const id = r.id + ":" + key, el = document.createElement("div");
-          el.className = "station sleep"; el.dataset.id = id;
-          el.innerHTML = stationHTML(ROLE[key]);
-          el.addEventListener("click", () => openWorker(id));
-          grid.appendChild(el);
-          stationEls[id] = { el, bubble: $(".bubble", el), bar: $(".prog i", el), note: $(".note", el), last: "" };
-        }
-        floor.appendChild(d);
+function loungeHTML() {
+  return `<div class="lounge"><div class="lt">☕ Dam olish zonasi</div>
+    <div class="it cooler" style="left:5%"><div class="bottle"></div><div class="body"></div><span class="spot" data-spot="cooler" style="left:-16px;top:96px"></span><span class="spot" data-spot="cooler" style="left:52px;top:96px"></span></div>
+    <div class="it counter" style="left:13%"><div class="mach"></div><div class="mugs">☕☕</div><span class="spot" data-spot="coffee" style="left:30px;top:66px"></span><span class="spot" data-spot="coffee" style="left:92px;top:66px"></span></div>
+    <div class="it table" style="left:33%"><span class="spot" data-spot="chat" data-pair="a" style="left:-16px;top:66px"></span><span class="spot" data-spot="chat" data-pair="a" style="left:54px;top:66px"></span></div>
+    <div class="it sofa" style="left:44%"><div class="back"></div><div class="front"></div><span class="spot" data-spot="sofa" style="left:32px;top:32px"></span><span class="spot" data-spot="sofa" style="left:85px;top:32px"></span><span class="spot" data-spot="sofa" style="left:138px;top:32px"></span></div>
+    <div class="it table" style="left:68%"><span class="spot" data-spot="chat" data-pair="b" style="left:-16px;top:66px"></span><span class="spot" data-spot="chat" data-pair="b" style="left:54px;top:66px"></span></div>
+    <div class="it bigplant" style="left:80%">🪴</div>
+    <div class="it cooler" style="left:91%"><div class="bottle"></div><div class="body"></div><span class="spot" data-spot="cooler" style="left:-16px;top:96px"></span></div>
+  </div>`;
+}
+
+function buildRooms() {
+  roomsEl.innerHTML = ""; ST = {}; VIS = {}; SPOTS = {}; LOOK = {};
+  S.rooms.forEach((r, ri) => {
+    const sec = document.createElement("section");
+    sec.className = "room"; sec.dataset.room = r.id; sec.style.setProperty("--floor", r.rang);
+    const initials = r.nom.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+    sec.innerHTML = `<div class="wall"><div class="sign">${esc(r.nom)}<small>Loyiha xonasi · ${ROLE_ORDER.length} xodim</small>${r.custom ? `<button data-delroom="${r.id}" title="Xonani o'chirish">🗑</button>` : ""}</div>
+      <div class="wall-mid"><div class="win"><i></i></div><div class="wclock"><i class="h"></i><i class="m"></i></div><div class="poster">${esc(initials)}</div><div class="win"><i style="animation-delay:-9s"></i></div></div>
+      <div class="board" data-board="${r.id}"></div></div><div class="floor"></div><div class="agents"></div>`;
+    const floor = $(".floor", sec), layer = $(".agents", sec);
+    C.bolimlar.forEach((b, bi) => {
+      if (bi === 4) floor.insertAdjacentHTML("beforeend", loungeHTML());
+      const d = document.createElement("div");
+      d.className = "dept"; d.style.setProperty("--dc", b.rang);
+      d.innerHTML = `<h3><span>${esc(b.nom)}</span><span data-dept="${r.id}:${b.id}"></span></h3><div class="grid"></div>`;
+      const grid = $(".grid", d);
+      for (const [key] of b.xodimlar) {
+        const id = r.id + ":" + key, R = ROLE[key];
+        const st = document.createElement("div");
+        st.className = "station"; st.dataset.id = id;
+        st.innerHTML = `<div class="scene"><div class="chairback"></div><span class="seat"></span>
+          <div class="monitor"><div class="screen s-${R.ekran}">${"<i></i>".repeat(SCREEN_ITEMS[R.ekran] || 4)}</div><div class="base"></div></div>
+          <div class="desk"><div class="top"></div><div class="front"></div></div><div class="kb"></div><div class="mouse"></div><div class="deskitem">${DESK_ITEMS[key] || "☕"}</div></div>
+          <div class="prog"><i></i></div><div class="note"></div>`;
+        st.addEventListener("click", () => openWorker(id));
+        grid.appendChild(st);
+        const L = LOOK[id] = makeLook(ri, key, ROLE_ORDER.indexOf(key));
+        if (r.id === "lobar" && key === "image") L.name = "Malika";
+        const ag = document.createElement("div");
+        ag.className = "ag seated idle"; ag.dataset.id = id;
+        ag.innerHTML = `<div class="bb"></div><div class="nm"><b><i></i>${esc(L.name)}</b><span>${esc(R.nom)}</span></div><div class="zz"><span>z</span><span>z</span><span>Z</span></div>${personSVG(L)}`;
+        ag.addEventListener("click", e => { e.stopPropagation(); openWorker(id); });
+        layer.appendChild(ag);
+        ST[id] = { st, bar: $(".prog i", st), note: $(".note", st), last: "" };
+        VIS[id] = { id, room: r.id, el: ag, bb: $(".bb", ag), md: $(".nm b i", ag), trait: L.trait, energy: rnd(55, 100), happyUntil: 0,
+          mode: "desk", sub: Math.random() < .5 * L.trait.sleep ? "sleep" : "idle", next: now() + rnd(2, 14), cls: "" };
       }
-      roomsEl.appendChild(sec);
-    }
-    buildTabs(); fillRoomSelect(); applyView(); listSig = "";
-  }
-  roomsEl.addEventListener("click", e => {
-    const id = e.target.dataset && e.target.dataset.delroom;
-    if (!id) return;
-    e.stopPropagation();
-    const r = roomById(id);
-    if (!confirm(`"${r.nom}" xonasini o'chiraymi? Uning vazifalari ham o'chadi.`)) return;
-    S.rooms = S.rooms.filter(x => x.id !== id);
-    for (const k of Object.keys(S.workers)) if (S.workers[k].room === id) delete S.workers[k];
-    S.queue = S.queue.filter(t => t.room !== id);
-    S.done = S.done.filter(t => t.room !== id);
-    if (S.view === id) S.view = "all";
-    save(); buildRooms(); render();
+      floor.appendChild(d);
+    });
+    roomsEl.appendChild(sec);
+    SPOTS[r.id] = $$(".spot", sec).map(el => ({ el, type: el.dataset.spot, pair: el.dataset.pair, by: null }));
   });
+  buildTabs(); fillRoomSelect(); applyView(); snapAll(); listSig = "";
+}
 
-  function buildTabs() {
-    $("#tabs").innerHTML = `<button data-view="all">🏢 Hamma xonalar</button>` +
-      S.rooms.map(r => `<button data-view="${r.id}">🚪 ${esc(r.nom)}</button>`).join("");
+// pozitsiyalar
+function rel(el, roomId) {
+  const sec = roomsEl.querySelector(`.room[data-room="${roomId}"]`);
+  const o = sec.getBoundingClientRect(), r = el.getBoundingClientRect();
+  return { x: r.left - o.left, y: r.top - o.top };
+}
+const seatPos = id => { const p = rel($(".seat", ST[id].st), VIS[id].room); return { x: p.x - 25, y: p.y - 62 }; };
+const spotPos = (sp, v) => { const p = rel(sp.el, v.room); return sp.type === "sofa" ? { x: p.x - 25, y: p.y - 62 } : { x: p.x - 25, y: p.y - 84 }; };
+function setPos(v, p, walk, cb) {
+  const el = v.el;
+  clearTimeout(v.timer);
+  if (!walk) { el.style.transitionDuration = "0s"; el.style.left = p.x + "px"; el.style.top = p.y + "px"; v.x = p.x; v.y = p.y; v.walking = false; cb && cb(); return; }
+  const dist = Math.hypot(p.x - (v.x || 0), p.y - (v.y || 0));
+  const dur = Math.max(0.35, Math.min(7, dist / (WALK_SPEED * Math.min(S.speed, 3))));
+  v.left = p.x < v.x; v.walking = true;
+  el.style.transitionDuration = dur + "s";
+  el.style.left = p.x + "px"; el.style.top = p.y + "px"; v.x = p.x; v.y = p.y;
+  v.timer = setTimeout(() => { v.walking = false; cb && cb(); }, dur * 1000);
+}
+function snapAll() {
+  for (const v of Object.values(VIS)) {
+    if (!v.el.offsetParent) continue;
+    if (v.mode === "desk" || v.mode === "walk" || !v.spot) { releaseSpot(v); v.partner = null; v.mode = "desk"; setPos(v, seatPos(v.id)); }
+    else setPos(v, spotPos(v.spot, v));
   }
-  $("#tabs").addEventListener("click", e => { const v = e.target.dataset.view; if (v) { S.view = v; save(); applyView(); } });
-  function applyView() {
-    if (S.view !== "all" && !roomById(S.view)) S.view = "all";
-    for (const sec of roomsEl.children) sec.classList.toggle("hidden", S.view !== "all" && sec.dataset.room !== S.view);
-    for (const b of $("#tabs").children) b.classList.toggle("cur", b.dataset.view === S.view);
-    pmBusy = false;
-  }
+}
 
-  function render() {
-    for (const [id, w] of Object.entries(S.workers)) {
-      const st = stationEls[id]; if (!st) continue;
-      const room = roomById(w.room), working = !!w.cur, q = working ? 0 : queueFor(w).length;
-      const key = working ? "w" + w.cur.id : "s" + q;
-      st.el.classList.toggle("work", working);
-      st.el.classList.toggle("sleep", !working);
-      st.bar.style.width = working ? Math.min(100, w.cur.p * 100).toFixed(1) + "%" : "0%";
-      if (st.last !== key) {
-        st.last = key;
-        if (working) { st.bubble.textContent = "💻 " + w.cur.title; st.note.textContent = w.cur.title; }
-        else {
-          st.bubble.textContent = q ? "😴 Navbatda " + q + " ta vazifa" : "😴 Vazifa yo'q";
-          st.note.textContent = (!q && room.uyquIzoh[w.role]) || (q ? "zzz… navbatda " + q : "zzz…");
-        }
+// ---------- Xatti-harakat ----------
+const CHAT = [["Reels zo'r chiqdi! 🔥", "Rahmat, montaj ham zo'r 😄"], ["Mijoz javob berdimi?", "Ertaga qo'ng'iroq qilamiz"], ["Qahva ichamizmi? ☕", "Albatta, 5 daqiqadan keyin"], ["Oblojka tayyormi?", "Deyarli, ranglarni tekshiryapman"], ["Raqobatchilar yangi aksiya qilibdi 👀", "Ko'rdim, tahlilga qo'shaman"], ["Dam olish kuni nima qilasan?", "Xivaga boraman 😊"], ["Bu hafta reach o'sdi 📈", "Hook ishlayapti demak!"], ["Brifni o'qidingmi?", "Ha, sariq rang #FFC93C 😄"], ["Charchadim-ey 😩", "Bir piyola choy ich, o'tib ketadi"]];
+function releaseSpot(v) { if (v.spot) { v.spot.by = null; v.spot = null; } }
+function freeSpot(room, type) { return (SPOTS[room] || []).filter(s => s.type === type && !s.by); }
+function goDesk(v) {
+  releaseSpot(v); v.forced = false;
+  if (v.partner) { const p = VIS[v.partner]; v.partner = null; if (p && p.partner === v.id) { p.partner = null; goDesk(p); } }
+  v.mode = "walk";
+  setPos(v, seatPos(v.id), true, () => { v.mode = "desk"; v.sub = "idle"; v.next = now() + rnd(4, 12); });
+}
+function goSpot(v, sp, mode, sub, dur) {
+  sp.by = v.id; v.spot = sp; v.mode = "walk";
+  setPos(v, spotPos(sp, v), true, () => { v.mode = mode; v.sub = sub; v.until = now() + dur; flashSay(v, { drink: "💧 Suv ichyapman", coffee: v.forced ? "☕ Charchadim, qahva kerak" : "☕ Qahva", phone: "📱 Tanaffus" }[sub] || ""); });
+}
+function flashSay(v, t, ms = 2400) { if (!t) return; v.say = t; v.sayUntil = now() + ms / 1000; }
+const needDesk = id => !!S.workers[id].cur || !!openQ(id);
+const awayCount = room => Object.values(VIS).filter(v => v.room === room && v.mode !== "desk").length;
+function moodOf(v) {
+  if (v.energy < 30) return "tired";
+  if (v.trait.happy || now() < v.happyUntil || v.mode === "chat") return "happy";
+  return "neutral";
+}
+function weighted(opts) { const tot = opts.reduce((a, o) => a + o[1], 0); let r = Math.random() * tot; for (const o of opts) if ((r -= o[1]) <= 0) return o[0]; return opts[0][0]; }
+
+function behave() {
+  const t = now();
+  for (const v of Object.values(VIS)) {
+    if (!v.el.offsetParent || v.mode === "walk") continue;
+    const need = needDesk(v.id), T = v.trait;
+    if (v.mode !== "desk") {
+      if ((need && !v.forced) || t > v.until) goDesk(v);
+      else if (v.mode === "chat" && t > v.nextLine && v.partner) {
+        const p = VIS[v.partner]; flashSay(v.li % 2 === 0 ? v : p, v.lines[v.li % 2], 2300); v.li++; v.nextLine = t + 2.6;
       }
+      continue;
     }
-    for (const r of S.rooms) {
-      const ws = Object.values(S.workers).filter(w => w.room === r.id), ishda = ws.filter(w => w.cur).length;
-      const board = $(`[data-board="${r.id}"]`);
-      if (board) board.innerHTML = `👷 Ishda: <b>${ishda}</b> · 😴 Uxlayapti: <b>${ws.length - ishda}</b><br>📋 Navbatda: <b>${S.queue.filter(t => t.room === r.id).length}</b> · ✅ Bajarildi: <b>${S.done.filter(t => t.room === r.id).length}</b>`;
-      for (const b of C.bolimlar) {
-        const el = $(`[data-dept="${r.id}:${b.id}"]`);
-        if (el) el.textContent = ws.filter(w => w.cur && ROLE[w.role].bolim === b.id).length + "/" + b.xodimlar.length + " ishda";
+    // juda charchagan ishlayotgan xodim qisqa qahva tanaffusiga chiqadi
+    if (S.workers[v.id].cur && v.energy < 12 && !openQ(v.id) && awayCount(v.room) < MAX_AWAY) {
+      const sp = freeSpot(v.room, "coffee").concat(freeSpot(v.room, "cooler"));
+      if (sp.length) { v.forced = true; const s = pick(sp); goSpot(v, s, "away", s.type === "coffee" ? "coffee" : "drink", rnd(7, 10)); continue; }
+    }
+    if (need) { v.sub = "idle"; continue; }
+    if (t < v.next) continue;
+    if (v.sub === "stretch") { v.sub = "idle"; v.next = t + rnd(3, 8); continue; }
+    const tired = v.energy < 30, canGo = awayCount(v.room) < MAX_AWAY;
+    const choice = weighted([
+      ["cooler", canGo && freeSpot(v.room, "cooler").length ? 1.3 : 0],
+      ["coffee", canGo && freeSpot(v.room, "coffee").length ? 1.1 * T.coffee * (tired ? 3 : 1) : 0],
+      ["sofa", canGo && freeSpot(v.room, "sofa").length ? .8 * (tired ? 2 : 1) : 0],
+      ["chat", canGo ? 1.4 * T.chat : 0],
+      ["phone", 1.5], ["stretch", .8 * (T.stretch || 1)], ["sleep", 3 * T.sleep * (tired ? 1.6 : 1)], ["idle", 1]
+    ]);
+    if (choice === "cooler") goSpot(v, pick(freeSpot(v.room, "cooler")), "away", "drink", rnd(7, 12));
+    else if (choice === "coffee") goSpot(v, pick(freeSpot(v.room, "coffee")), "away", "coffee", rnd(8, 13));
+    else if (choice === "sofa") goSpot(v, pick(freeSpot(v.room, "sofa")), "sofa", "phone", rnd(10, 16));
+    else if (choice === "chat" && startChat(v)) {}
+    else if (choice === "phone") { v.sub = "phone"; v.next = t + rnd(6, 12); }
+    else if (choice === "stretch") { v.sub = "stretch"; v.next = t + 2.5; }
+    else if (choice === "sleep") { v.sub = "sleep"; v.next = t + rnd(14, 35); }
+    else { v.sub = "idle"; v.next = t + rnd(4, 9); }
+  }
+}
+function startChat(v) {
+  const pairs = {};
+  for (const s of freeSpot(v.room, "chat")) (pairs[s.pair] = pairs[s.pair] || []).push(s);
+  const pair = Object.values(pairs).find(p => p.length === 2);
+  if (!pair) return false;
+  const cand = Object.values(VIS).filter(o => o !== v && o.room === v.room && o.mode === "desk" && !o.walking && !needDesk(o.id) && o.el.offsetParent);
+  if (!cand.length) return false;
+  cand.sort((a, b) => Math.hypot(a.x - v.x, a.y - v.y) - Math.hypot(b.x - v.x, b.y - v.y));
+  const p = pick(cand.slice(0, 6)), lines = v.energy < 30 ? CHAT[CHAT.length - 1] : pick(CHAT), dur = rnd(10, 16);
+  v.partner = p.id; p.partner = v.id; v.lines = p.lines = lines; v.li = 0; v.nextLine = now() + 3.5;
+  goSpot(v, pair[0], "chat", "talk", dur); goSpot(p, pair[1], "chat", "talk", dur);
+  return true;
+}
+
+// ---------- Vazifalar ----------
+const queueFor = w => S.queue.filter(t => t.room === w.room && t.role === w.role);
+const timeStr = () => new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" });
+function startTask(id, t, flash) {
+  const w = S.workers[id];
+  S.queue = S.queue.filter(x => x.id !== t.id);
+  w.cur = t; w.idle = 0;
+  if (flash && VIS[id]) { const m = document.createElement("div"); m.className = "wake"; m.textContent = "!"; VIS[id].el.appendChild(m); setTimeout(() => m.remove(), 1000); }
+}
+function tick(dt) {
+  if (S.paused) return;
+  for (const [id, w] of Object.entries(S.workers)) {
+    const v = VIS[id], atDesk = !v || (v.mode === "desk" && !v.walking);
+    if (v) { // energiya
+      if (w.cur && atDesk) v.energy -= dt * S.speed * 0.9 * v.trait.tire;
+      else if (v.mode !== "desk" || v.sub === "sleep") v.energy += dt * S.speed * 3;
+      else v.energy += dt * S.speed * .8;
+      v.energy = Math.max(0, Math.min(100, v.energy));
+    }
+    if (w.cur) {
+      if (!atDesk) continue;
+      const eff = (v && v.energy < 25 ? .6 : 1) / ((v && v.trait.slow) || 1);
+      w.cur.p += dt * S.speed * eff / w.cur.d;
+      if (w.cur.p >= 1) {
+        S.done.push({ ...w.cur, p: 1, at: timeStr() }); if (S.done.length > 300) S.done.shift();
+        w.cur = null; w.idle = 0;
+        if (v) { flashSay(v, "✅ Tayyor!"); v.sub = "stretch"; v.next = now() + 2.5; v.happyUntil = now() + 10; }
       }
-    }
-    renderLists();
-    $("#autoBtn").textContent = "⚙️ Avto: " + (S.auto ? "ON" : "OFF");
-    $("#autoBtn").classList.toggle("on", S.auto);
-    $("#speedBtn").textContent = "⏩ " + S.speed + "x";
-    $("#pauseBtn").textContent = S.paused ? "▶️ Davom" : "⏸ Pauza";
-    const all = Object.values(S.workers), w = all.filter(x => x.cur).length;
-    $("#stats").textContent = `🚪 ${S.rooms.length} xona · 👷 ${w} ishlayapti · 😴 ${all.length - w} uxlayapti`;
-  }
-
-  let listSig = "";
-  function renderLists() {
-    const sig = S.queue.map(t => t.id).join(",") + "|" + S.done.length + "|" + S.rooms.length;
-    if (sig === listSig) return;
-    listSig = sig;
-    const who = t => `[${(roomById(t.room) || { nom: "?" }).nom.split(" ")[0]}] ${ROLE[t.role].nom}`;
-    $("#queue").innerHTML = S.queue.length ? S.queue.map(t =>
-      `<li class="${t.src === "men" ? "me" : ""}"><span class="who">${esc(who(t))}</span><span>${esc(t.title)}</span><button data-del="${t.id}" title="O'chirish">✕</button></li>`).join("")
-      : `<li class="empty">Navbat bo'sh — hamma vazifalar taqsimlangan.</li>`;
-    $("#done").innerHTML = S.done.length ? S.done.slice().reverse().slice(0, 80).map(t =>
-      `<li class="${t.src === "men" ? "me" : ""}"><span class="who">${esc(t.at)} ${esc(who(t))}</span><span>${esc(t.title)}</span></li>`).join("")
-      : `<li class="empty">Hali hech narsa tugamadi.</li>`;
-  }
-  $("#queue").addEventListener("click", e => {
-    const id = +e.target.dataset.del; if (!id) return;
-    S.queue = S.queue.filter(t => t.id !== id); save(); render();
-  });
-
-  // ---------- Mantiq ----------
-  const queueFor = w => S.queue.filter(t => t.room === w.room && t.role === w.role);
-  const timeStr = () => new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" });
-
-  function startTask(id, t, flash) {
-    const w = S.workers[id];
-    S.queue = S.queue.filter(x => x.id !== t.id);
-    w.cur = t; w.idle = 0;
-    if (flash && stationEls[id]) {
-      const m = document.createElement("div");
-      m.className = "wake"; m.textContent = "!";
-      $(".scene", stationEls[id].el).appendChild(m);
-      setTimeout(() => m.remove(), 1000);
-    }
-  }
-  function tick(dt) {
-    if (S.paused) return;
-    for (const [id, w] of Object.entries(S.workers)) {
-      if (w.cur) {
-        w.cur.p += (dt * S.speed) / w.cur.d;
-        if (w.cur.p >= 1) {
-          S.done.push({ ...w.cur, p: 1, at: timeStr() });
-          if (S.done.length > 300) S.done.shift();
-          w.cur = null; w.idle = 0;
-        }
-      } else {
-        w.idle += dt * S.speed;
-        const next = queueFor(w)[0];
-        if (next && (next.src === "men" || (S.auto && w.idle >= IDLE_BEFORE_NEXT))) startTask(id, next, true);
-      }
-    }
-  }
-  let lastT = performance.now(), saveAcc = 0;
-  setInterval(() => {
-    const now = performance.now(), dt = Math.min(2, (now - lastT) / 1000);
-    lastT = now; tick(dt); render();
-    if ((saveAcc += dt) > 3) { saveAcc = 0; save(); }
-    $("#clock").textContent = "🕒 " + timeStr();
-  }, 400);
-
-  // ---------- Project menejer ----------
-  const PHRASES = ["Qalay ketyapti? 👀", "Zo'r chiqyapti! 👍", "Muddatni unutmang ⏰", "Hisobotga qo'shaman 📋", "Raqamlar qani? 📊", "Mijoz kutyapti 🙂", "Yana ozgina qoldi 💪", "Brifni tekshirdingizmi? 📄"];
-  const IDLE_PHRASES = ["Hamma dam olyapti… ☕", "Yangi topshiriq kutyapmiz", "Navbatni tekshiryapman 📋"];
-  let pmBusy = false;
-  const posOf = (el, dx = 0, dy = 0) => { const o = office.getBoundingClientRect(), r = el.getBoundingClientRect(); return { x: r.left - o.left + dx, y: r.top - o.top + dy }; };
-  function pmGo(p, cb) {
-    const cur = { x: parseFloat(pmEl.style.left) || 0, y: parseFloat(pmEl.style.top) || 0 };
-    const dur = Math.max(0.6, Math.min(4, Math.hypot(p.x - cur.x, p.y - cur.y) / 160));
-    pmEl.style.transition = `left ${dur}s linear, top ${dur}s linear`;
-    pmEl.classList.add("walk");
-    pmEl.style.left = p.x + "px"; pmEl.style.top = p.y + "px";
-    setTimeout(() => { pmEl.classList.remove("walk"); cb && cb(); }, dur * 1000);
-  }
-  function pmSay(t, ms = 2600) { $("#pmSay").textContent = t; pmEl.classList.add("talk"); setTimeout(() => pmEl.classList.remove("talk"), ms); }
-  function pmLoop() {
-    if (pmBusy) return;
-    pmBusy = true;
-    const working = Object.entries(S.workers).filter(([id, w]) => w.cur && stationEls[id] && stationEls[id].el.offsetParent);
-    if (!S.paused && working.length) {
-      const [id, w] = working[Math.floor(Math.random() * working.length)];
-      const el = stationEls[id].el;
-      pmGo(posOf(el, el.offsetWidth - 18, 30), () => {
-        pmSay(w.cur ? (w.cur.p > 0.8 ? "Deyarli tayyor! 🎉" : PHRASES[Math.floor(Math.random() * PHRASES.length)]) : "Barakalla! ✅");
-        setTimeout(() => (pmBusy = false), 2800);
-      });
     } else {
-      pmGo(posOf($("#pmHome"), -20, -70), () => { pmSay(IDLE_PHRASES[Math.floor(Math.random() * IDLE_PHRASES.length)]); setTimeout(() => (pmBusy = false), 3000); });
+      w.idle += dt * S.speed;
+      const next = queueFor(w)[0];
+      if (next && (next.src === "men" || (S.auto && w.idle >= IDLE_BEFORE_NEXT))) startTask(id, next, true);
     }
   }
+}
 
-  // ---------- Boshqaruv ----------
-  $("#autoBtn").onclick = () => { S.auto = !S.auto; save(); render(); };
-  $("#speedBtn").onclick = () => { S.speed = { 1: 3, 3: 10, 10: 1 }[S.speed] || 1; save(); render(); };
-  $("#pauseBtn").onclick = () => { S.paused = !S.paused; save(); render(); };
-  $("#resetBtn").onclick = () => { if (confirm("Ofisni boshlang'ich holatga qaytaraymi? Siz qo'shgan xonalar va topshiriqlar o'chadi.")) { S = fresh(); save(); buildRooms(); render(); } };
-  $("#addRoomBtn").onclick = () => {
-    const nom = (prompt("Yangi loyiha (xona) nomi:", "") || "").trim().slice(0, 60);
-    if (!nom) return;
-    const id = "x" + Date.now().toString(36);
-    seedRoom(S, { id, nom, rang: ROOM_COLORS[S.rooms.length % ROOM_COLORS.length] }, true);
-    S.view = id; save(); buildRooms(); render();
-    roomsEl.lastElementChild.scrollIntoView({ behavior: "smooth" });
+// ---------- Render ----------
+const MOOD_EMO = { happy: "😄", neutral: "🙂", tired: "😩" };
+function render() {
+  const t = now();
+  for (const [id, v] of Object.entries(VIS)) {
+    const w = S.workers[id], st = ST[id], q = openQ(id), room = roomById(v.room);
+    const seated = (v.mode === "desk" || v.mode === "sofa") && !v.walking, mood = moodOf(v);
+    let c = "ag " + mood;
+    if (v.walking) c += " walk";
+    if (seated) c += " seated";
+    if (v.left) c += " left";
+    if (q && v.mode === "desk" && !v.walking) c += " hand";
+    else if (!v.walking) {
+      if (v.mode === "desk") c += w.cur ? " work" : " " + v.sub;
+      else if (v.mode === "sofa") c += " phone";
+      else if (v.mode === "chat") c += " talk";
+      else c += " " + v.sub;
+    }
+    const saying = v.say && t < v.sayUntil;
+    if (saying) c += " say";
+    if (c !== v.cls) { v.el.className = c; v.cls = c; }
+    const emo = v.mode === "desk" && v.sub === "sleep" && !w.cur && !q ? "😴" : MOOD_EMO[mood];
+    if (v.md.textContent !== emo) v.md.textContent = emo;
+    const bubble = q && v.mode === "desk" ? "✋ Savolim bor!" : saying ? v.say : w.cur ? "💻 " + w.cur.title : v.mode === "desk" && v.sub === "sleep" ? "😴 Topshiriq kutyapman" : "🙂 Bo'sh";
+    if (v.bb.textContent !== bubble) v.bb.textContent = bubble;
+    st.st.classList.toggle("on", !!w.cur && v.mode === "desk" && !v.walking);
+    st.bar.style.width = w.cur ? Math.min(100, w.cur.p * 100).toFixed(1) + "%" : "0%";
+    const nq = w.cur ? 0 : queueFor(w).length, key = w.cur ? "w" + w.cur.id : "s" + nq;
+    if (st.last !== key) { st.last = key; st.note.textContent = w.cur ? w.cur.title : ((!nq && room.uyquIzoh[w.role]) || (nq ? "navbatda " + nq + " ta vazifa" : "")); }
+  }
+  for (const r of S.rooms) {
+    const ws = Object.values(S.workers).filter(w => w.room === r.id), ishda = ws.filter(w => w.cur).length;
+    const vs = Object.values(VIS).filter(v => v.room === r.id);
+    const b = $(`[data-board="${r.id}"]`);
+    if (b) b.innerHTML = `👷 Ishda: <b>${ishda}</b> · 😴 Uxlayapti: <b>${vs.filter(v => v.mode === "desk" && v.sub === "sleep" && !S.workers[v.id].cur).length}</b> · ☕ Tanaffusda: <b>${vs.filter(v => v.mode !== "desk").length}</b> · 😩 Charchagan: <b>${vs.filter(v => v.energy < 30).length}</b><br>📋 Navbatda: <b>${S.queue.filter(q => q.room === r.id).length}</b> · ✅ Bajarildi: <b>${S.done.filter(q => q.room === r.id).length}</b> · ✋ Savol: <b>${S.questions.filter(q => q.room === r.id && !q.a).length}</b>`;
+    for (const d of C.bolimlar) { const el = $(`[data-dept="${r.id}:${d.id}"]`); if (el) el.textContent = ws.filter(w => w.cur && ROLE[w.role].bolim === d.id).length + "/" + d.xodimlar.length + " ishda"; }
+  }
+  renderLists();
+  $("#autoBtn").textContent = "⚙️ Avto: " + (S.auto ? "ON" : "OFF"); $("#autoBtn").classList.toggle("on", S.auto);
+  $("#speedBtn").textContent = "⏩ " + S.speed + "x";
+  $("#pauseBtn").textContent = S.paused ? "▶️ Davom" : "⏸ Pauza";
+  const all = Object.values(S.workers), wk = all.filter(x => x.cur).length;
+  $("#stats").textContent = `🚪 ${S.rooms.length} xona · 👷 ${wk} ishlayapti · 👥 ${all.length} xodim`;
+  const d = new Date(); for (const c of $$(".wclock")) { c.children[0].style.transform = `rotate(${(d.getHours() % 12) * 30 + d.getMinutes() / 2}deg)`; c.children[1].style.transform = `rotate(${d.getMinutes() * 6}deg)`; }
+}
+
+let listSig = "";
+function who(t) { const L = LOOK[t.room + ":" + t.role]; return `[${(roomById(t.room) || { nom: "?" }).nom.split(" ")[0]}] ${L ? L.name + " · " : ""}${ROLE[t.role].nom}`; }
+function renderLists() {
+  const sig = S.queue.map(t => t.id).join(",") + "|" + S.done.length + "|" + S.rooms.length + "|" + S.questions.map(q => q.a ? 1 : 0).join("") + "|" + S.pmLog.length;
+  if (sig === listSig) return; listSig = sig;
+  $("#queue").innerHTML = S.queue.length ? S.queue.map(t => `<li class="${t.src === "men" ? "me" : ""}"><span class="who">${esc(who(t))}</span><span>${esc(t.title)}</span><button data-del="${t.id}" title="O'chirish">✕</button></li>`).join("") : `<li class="empty">Navbat bo'sh.</li>`;
+  $("#done").innerHTML = S.done.length ? S.done.slice().reverse().slice(0, 80).map(t => `<li class="${t.src === "men" ? "me" : ""}"><span class="who">${esc(t.at)} ${esc(who(t))}</span><span>${esc(t.title)}</span></li>`).join("") : `<li class="empty">Hali hech narsa tugamadi.</li>`;
+  const qs = S.questions.filter(q => roomById(q.room));
+  $("#questions").innerHTML = qs.length ? qs.map(q => `<li class="${q.a ? "ans" : ""}"><span class="who">${esc(who(q))}</span><span>${esc(q.q)}${q.a ? `<br><i>↳ ${esc(q.a)}</i>` : ""}</span><button data-q="${q.id}">${q.a ? "✏️" : "Javob"}</button></li>`).join("") : `<li class="empty">Savollar yo'q.</li>`;
+  $("#pmlog").innerHTML = S.pmLog.length ? S.pmLog.slice().reverse().map((m, i) => `<li class="${i === 0 ? "new" : ""}"><span class="who">${esc(m.at)} ${m.kind === "ask" ? "🔎" : "💡"}</span><span>${esc(m.text)}</span></li>`).join("") : `<li class="empty">Hozircha xabar yo'q. Uxlayotgan xodimni bosib, "PM'dan so'rash"ni tanlang.</li>`;
+}
+$("#queue").addEventListener("click", e => { const id = +e.target.dataset.del; if (!id) return; S.queue = S.queue.filter(t => t.id !== id); save(); render(); });
+$("#questions").addEventListener("click", e => { const id = e.target.dataset.q; if (id) openQuestion(S.questions.find(q => q.id === id)); });
+$("#copyAns").onclick = () => {
+  const txt = S.questions.filter(q => q.a && roomById(q.room)).map(q => `${who(q)}\nSavol: ${q.q}\nJavob: ${q.a}`).join("\n\n");
+  if (!txt) return alert("Hali javob berilmagan.");
+  navigator.clipboard.writeText(txt).then(() => alert("Javoblar nusxalandi — Claude bilan suhbatga joylang."), () => prompt("Nusxalang:", txt));
+};
+
+// ---------- Bildirishnomalar ----------
+let toastT;
+function toast(title, text) {
+  const el = $("#toast"); el.innerHTML = `<b>${esc(title)}</b>${esc(text)}`; el.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), 7000);
+}
+function notify(text) {
+  toast("🧑‍💼 Kamola · Project menejer", text);
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  const opts = { body: text, icon: "../../favicon.svg", tag: "lobar-pm-" + Date.now() };
+  if (navigator.serviceWorker && navigator.serviceWorker.ready) navigator.serviceWorker.getRegistration().then(r => r ? r.showNotification("Lobar Agency · PM", opts) : tryNotif(opts)).catch(() => tryNotif(opts));
+  else tryNotif(opts);
+  if (navigator.vibrate) navigator.vibrate(120);
+}
+function tryNotif(opts) { try { new Notification("Lobar Agency · PM", opts); } catch (e) {} }
+function updNotifBtn() {
+  const b = $("#notifBtn");
+  if (!("Notification" in window)) { b.textContent = "🔕 Brauzer qo'llamaydi"; b.disabled = true; return; }
+  b.textContent = Notification.permission === "granted" ? "🔔 Yoqilgan" : Notification.permission === "denied" ? "🔕 Bloklangan" : "🔔 Bildirishnomani yoqish";
+  b.classList.toggle("on", Notification.permission === "granted");
+}
+$("#notifBtn").onclick = () => { if ("Notification" in window) Notification.requestPermission().then(updNotifBtn); };
+function pmLog(text, kind, push) {
+  S.pmLog.push({ at: timeStr(), text, kind }); if (S.pmLog.length > 60) S.pmLog.shift();
+  save(); listSig = ""; if (push) notify(text);
+}
+
+// ---------- Project menejer ----------
+const PM = { el: null, x: 0, y: 0, busy: false, ask: null, lastSuggest: now(), seen: {} };
+const PM_LOOK = { female: true, name: "Kamola", skin: "#eec09a", hair: "#1d1714", hijab: "#3b5ba5", style: "bun", beard: false, type: "suit", main: "#1d3557", acc: [], pants: "#1d1d29" };
+const PHRASES = ["Qalay ketyapti? 👀", "Zo'r chiqyapti! 👍", "Muddatni unutmang ⏰", "Hisobotga qo'shaman 📋", "Raqamlar qani? 📊", "Brifga mosmi? 📄", "Yana ozgina qoldi 💪"];
+function buildPM() {
+  const el = document.createElement("div");
+  el.id = "pm"; el.className = "ag";
+  el.innerHTML = `<div class="bb"></div><div class="nm"><b>${PM_LOOK.name}</b><span>Project menejer</span></div>` +
+    personSVG(PM_LOOK, `<rect x="8.6" y="40" width="7" height="9" rx="1" fill="#c8a27a"/><rect x="9.4" y="41.5" width="5.4" height="6.8" fill="#fff"/>`);
+  office.appendChild(el); PM.el = el; PM.bb = $(".bb", el);
+  pmMove(pmHome(), false);
+}
+const pmHome = () => { const o = office.getBoundingClientRect(), r = $("#pmHome").getBoundingClientRect(); return { x: r.left - o.left - 25, y: r.top - o.top - 84 }; };
+function pmMove(p, walk, cb) {
+  const el = PM.el;
+  if (!walk) { el.style.transitionDuration = "0s"; el.style.left = p.x + "px"; el.style.top = p.y + "px"; PM.x = p.x; PM.y = p.y; return; }
+  const dur = Math.max(0.5, Math.min(5, Math.hypot(p.x - PM.x, p.y - PM.y) / 220));
+  el.className = "ag walk" + (p.x < PM.x ? " left" : "");
+  el.style.transitionDuration = dur + "s"; el.style.left = p.x + "px"; el.style.top = p.y + "px"; PM.x = p.x; PM.y = p.y;
+  setTimeout(() => { el.className = "ag idle"; cb && cb(); }, dur * 1000);
+}
+function pmSay(t, ms = 3000) { PM.bb.textContent = t; PM.el.classList.add("say"); clearTimeout(PM.sayT); PM.sayT = setTimeout(() => PM.el.classList.remove("say"), ms); }
+function posNear(v) { const o = office.getBoundingClientRect(), r = v.el.getBoundingClientRect(); return { x: r.left - o.left + 46, y: r.top - o.top + (v.mode === "desk" || v.mode === "sofa" ? -22 : 2) }; }
+
+function explain(id) {
+  const w = S.workers[id], v = VIS[id], L = LOOK[id], R = ROLE[w.role], room = roomById(w.room), q = openQ(id);
+  const n = `${L.name} (${R.nom})`, tired = v.energy < 30 ? " U charchagan — biroz dam olishi kerak." : "";
+  if (q) return `${n} sizdan javob kutyapti: "${q.q}" Javob bersangiz, ishini davom ettiradi.`;
+  if (w.cur) return `${n} ishlayapti: "${w.cur.title}" — ${Math.round(w.cur.p * 100)}% tayyor.${tired}`;
+  if (v.mode === "chat") return `${n} ${LOOK[v.partner] ? LOOK[v.partner].name : "hamkasbi"} bilan gaplashyapti. Vazifasi yo'q, shuning uchun qisqa tanaffusda.`;
+  if (v.mode !== "desk") return `${n} tanaffusda (${v.sub === "drink" ? "suv ichyapti" : v.sub === "coffee" ? "qahva ichyapti" : "divanda dam olyapti"}). Hozir vazifasi yo'q.`;
+  const nq = queueFor(w).length, done = S.done.filter(t => t.room === w.room && t.role === w.role).length;
+  if (nq && !S.auto) return `${n}ning navbatida ${nq} ta ish bor, lekin "Avto" o'chiq. Avtoni yoqing — o'zi boshlaydi.`;
+  if (nq) return `${n} ishini tugatdi, navbatdagi ishni bir necha soniyada boshlaydi.`;
+  if (room.uyquIzoh[w.role]) return `${n}ning ishi hali boshlanmagan: ${room.uyquIzoh[w.role]}. Shuning uchun ${v.sub === "sleep" ? "mudrayapti 😴" : "bo'sh o'tiribdi"}.`;
+  const sug = SUGGEST[w.role];
+  const holat = v.sub === "sleep" ? "uxlayapti 😴" : "bo'sh o'tiribdi";
+  if (w.role === "aso") return `${n} ${holat}: bu yo'nalish (App Store / Google Play) mobil ilova bo'lsagina kerak. Hozircha unga ish yo'q.`;
+  return `${n} ${holat}: bu loyihada ${done ? `unga berilgan ${done} ta ish tugagan` : "unga hali topshiriq berilmagan"}.` + (sug ? ` Taklifim: ${L.name}ga ${sug} topshiraylik.` : "");
+}
+function pmAsk(id) { PM.ask = id; PM.busy = false; pmSay("Hozir borib ko'raman 👀"); }
+function pmLoop() {
+  if (PM.busy) return; PM.busy = true;
+  if (PM.ask && VIS[PM.ask]) {
+    const id = PM.ask, v = VIS[id]; PM.ask = null;
+    if (!v.el.offsetParent) { S.view = v.room; applyView(); snapAll(); }
+    pmMove(posNear(v), true, () => {
+      const txt = explain(id); pmSay(txt, 7000); pmLog(txt, "ask", false); toast("🧑‍💼 Kamola · Project menejer", txt);
+      setTimeout(() => (PM.busy = false), 6000);
+    });
+    return;
+  }
+  const vis = Object.values(VIS).filter(v => v.el.offsetParent && v.mode === "desk" && !v.walking);
+  const hands = vis.filter(v => openQ(v.id)), working = vis.filter(v => S.workers[v.id].cur);
+  const target = (hands.length && Math.random() < .35) ? pick(hands) : working.length && !S.paused ? pick(working) : null;
+  if (target) {
+    pmMove(posNear(target), true, () => {
+      const w = S.workers[target.id];
+      pmSay(openQ(target.id) ? "Savolingizni Lobarga yetkazdim ✋" : target.energy < 30 ? "Charchadingizmi? Qahva iching ☕" : w.cur && w.cur.p > .8 ? "Deyarli tayyor! 🎉" : pick(PHRASES));
+      setTimeout(() => (PM.busy = false), 2800);
+    });
+  } else pmMove(pmHome(), true, () => { pmSay(pick(["Navbatni tekshiryapman 📋", "Yangi topshiriq kutyapmiz", "Hammasi joyida ☕"])); setTimeout(() => (PM.busy = false), 3000); });
+}
+// PM o'zi taklif va savollar bilan chiqadi (har ~90 soniyada tekshiradi)
+function pmSuggest() {
+  const t = now(); if (t - PM.lastSuggest < 90) return; PM.lastSuggest = t;
+  const ideas = [];
+  const qn = S.questions.filter(q => !q.a && roomById(q.room)).length;
+  if (qn) ideas.push(["q" + qn, `${qn} ta xodim sizdan javob kutyapti (qo'lini ko'targanlar). Javob bersangiz, ishlar tezlashadi.`]);
+  for (const r of S.rooms) {
+    const ws = Object.values(S.workers).filter(w => w.room === r.id);
+    const idle = ws.filter(w => !w.cur && !queueFor(w).length).length, inQ = S.queue.filter(q => q.room === r.id).length;
+    if (!inQ && idle > ws.length * .7) ideas.push(["empty" + r.id, `"${r.nom}" xonasida navbatdagi ishlar tugadi, ${idle} ta xodim bo'sh. Yangi topshiriqlar beraylikmi? Masalan: raqobatchilar yangi tahlili yoki keyingi hafta kontent rejasi.`]);
+    const tired = Object.values(VIS).filter(v => v.room === r.id && v.energy < 30).length;
+    if (tired >= 3) ideas.push(["tired" + r.id + tired, `"${r.nom}" xonasida ${tired} ta xodim charchagan. Ishlarni boshqa kunga bo'lib beraylikmi?`]);
+  }
+  const fresh = ideas.filter(([k]) => !PM.seen[k] || t - PM.seen[k] > 600);
+  if (!fresh.length) return;
+  const [k, text] = fresh[0]; PM.seen[k] = t;
+  pmLog(text, "idea", true); pmSay("💡 Lobarga taklif yubordim", 3000);
+}
+
+// ---------- Boshqaruv ----------
+function buildTabs() { $("#tabs").innerHTML = `<button data-view="all">🏢 Hamma xonalar</button>` + S.rooms.map(r => `<button data-view="${r.id}">🚪 ${esc(r.nom)}</button>`).join(""); }
+$("#tabs").addEventListener("click", e => { const v = e.target.dataset.view; if (v) { S.view = v; save(); applyView(); snapAll(); PM.busy = false; } });
+function applyView() {
+  if (S.view !== "all" && !roomById(S.view)) S.view = "all";
+  for (const sec of roomsEl.children) sec.classList.toggle("hidden", S.view !== "all" && sec.dataset.room !== S.view);
+  for (const b of $("#tabs").children) b.classList.toggle("cur", b.dataset.view === S.view);
+}
+roomsEl.addEventListener("click", e => {
+  const id = e.target.dataset && e.target.dataset.delroom; if (!id) return;
+  e.stopPropagation();
+  const r = roomById(id);
+  if (!confirm(`"${r.nom}" xonasini o'chiraymi? Uning vazifalari ham o'chadi.`)) return;
+  S.rooms = S.rooms.filter(x => x.id !== id);
+  for (const k of Object.keys(S.workers)) if (S.workers[k].room === id) delete S.workers[k];
+  S.queue = S.queue.filter(t => t.room !== id); S.done = S.done.filter(t => t.room !== id); S.questions = S.questions.filter(q => q.room !== id);
+  save(); buildRooms(); render();
+});
+$("#autoBtn").onclick = () => { S.auto = !S.auto; save(); render(); };
+$("#speedBtn").onclick = () => { S.speed = { 1: 3, 3: 10, 10: 1 }[S.speed] || 1; save(); render(); };
+$("#pauseBtn").onclick = () => { S.paused = !S.paused; save(); render(); };
+$("#resetBtn").onclick = () => { if (confirm("Ofisni boshlang'ich holatga qaytaraymi? Siz qo'shgan xonalar, topshiriqlar va javoblar o'chadi.")) { S = fresh(); save(); buildRooms(); render(); } };
+$("#addRoomBtn").onclick = () => {
+  const nom = (prompt("Yangi loyiha (xona) nomi:", "") || "").trim().slice(0, 60); if (!nom) return;
+  const id = "x" + Date.now().toString(36);
+  seedRoom(S, { id, nom, rang: ROOM_COLORS[S.rooms.length % ROOM_COLORS.length] }, true);
+  S.view = id; save(); buildRooms(); render();
+  pmLog(`Yangi loyiha xonasi ochildi: "${nom}". Brif bersangiz, birinchi vazifalarni taqsimlayman.`, "idea", true);
+};
+const fRoom = $("#fRoom"), fRole = $("#fRole");
+function fillRoomSelect() { const prev = fRoom.value; fRoom.innerHTML = S.rooms.map(r => `<option value="${r.id}">${esc(r.nom)}</option>`).join(""); if (roomById(prev)) fRoom.value = prev; }
+fRole.innerHTML = C.bolimlar.map(b => `<optgroup label="${esc(b.nom)}">${b.xodimlar.map(([k, n]) => `<option value="${k}">${esc(n)}</option>`).join("")}</optgroup>`).join("");
+function addTask(room, role, title, d) {
+  const t = { id: ++S.seq, room, role, title, d, p: 0, src: "men" };
+  S.queue.unshift(t);
+  const id = room + ":" + role;
+  if (!S.workers[id].cur) startTask(id, t, true);
+  save(); render();
+}
+$("#taskForm").onsubmit = e => { e.preventDefault(); const title = $("#fTitle").value.trim(); if (!title || !fRoom.value) return; addTask(fRoom.value, fRole.value, title, +$("#fDur").value); $("#fTitle").value = ""; };
+
+// ---------- Oynalar ----------
+const dlg = $("#dlg");
+function openWorker(id) {
+  const q = openQ(id); if (q) return openQuestion(q);
+  const w = S.workers[id], R = ROLE[w.role], room = roomById(w.room), L = LOOK[id], v = VIS[id], mood = moodOf(v);
+  const qu = queueFor(w), d = S.done.filter(t => t.room === w.room && t.role === w.role);
+  const state = w.cur ? "💻 <b>Ishlayapti:</b> " + esc(w.cur.title) : v.mode === "chat" ? "💬 Hamkasbi bilan suhbatlashyapti" : v.mode !== "desk" ? "☕ Tanaffusda" : v.sub === "sleep" ? "😴 Uxlayapti" : "🙂 Bo'sh";
+  const ec = v.energy > 60 ? "#4ade80" : v.energy > 30 ? "#fbbf24" : "#ef4444";
+  dlg.innerHTML = `<h3>${esc(L.name)} · ${esc(R.nom)}</h3><div class="sub">${esc(room.nom)} · ${esc(C.bolimlar.find(b => b.id === R.bolim).nom)}</div>
+    <p style="margin:8px 0 2px">${L.trait.emoji} <b>${L.trait.nom}</b> — ${esc(L.trait.desc)}</p>
+    <div class="sub">Kayfiyat: ${MOOD_EMO[mood]} ${{ happy: "quvnoq", neutral: "yaxshi", tired: "charchagan" }[mood]} · Energiya: ${Math.round(v.energy)}%</div>
+    <div class="en"><i style="width:${v.energy}%;background:${ec}"></i></div>
+    <p>${state}</p>${w.cur ? `<div class="bar"><i style="width:${(w.cur.p * 100).toFixed(0)}%"></i></div>` : ""}
+    <b>Navbatda (${qu.length})</b><ul>${qu.map(t => `<li>${esc(t.title)}</li>`).join("") || "<li>—</li>"}</ul>
+    <b>Bajargan (${d.length})</b><ul>${d.slice(-6).reverse().map(t => `<li>${esc(t.title)}</li>`).join("") || "<li>—</li>"}</ul>
+    <form method="dialog" id="qf"><input id="qt" placeholder="${esc(L.name)}ga yangi topshiriq…" maxlength="120"><button>➕</button></form>
+    <div class="row"><button id="askpm">🧑‍💼 PM'dan so'rash: nima qilyapti?</button><button id="cl">Yopish</button></div>`;
+  $("#cl", dlg).onclick = () => dlg.close();
+  $("#askpm", dlg).onclick = () => { dlg.close(); pmAsk(id); };
+  $("#qf", dlg).onsubmit = () => { const t = $("#qt", dlg).value.trim(); if (t) addTask(w.room, w.role, t, 75); };
+  dlg.showModal();
+}
+function openQuestion(q) {
+  const id = q.room + ":" + q.role, L = LOOK[id], R = ROLE[q.role];
+  dlg.innerHTML = `<h3>✋ ${esc(L ? L.name : "")} · ${esc(R.nom)}</h3><div class="sub">${esc(roomById(q.room).nom)}</div>
+    <div class="q">${esc(q.q)}</div>
+    <form method="dialog" id="af" style="display:block"><textarea id="at" placeholder="Javobingiz…">${esc(q.a)}</textarea>
+    <div class="row"><button type="button" id="cl">Keyinroq</button><button>✅ Javob berish</button></div></form>`;
+  $("#cl", dlg).onclick = () => dlg.close();
+  $("#af", dlg).onsubmit = () => {
+    const a = $("#at", dlg).value.trim(); if (!a) return;
+    q.a = a; save(); if (VIS[id]) { flashSay(VIS[id], "Rahmat! 🙏", 3000); VIS[id].happyUntil = now() + 12; } listSig = ""; render();
   };
+  dlg.showModal();
+}
 
-  const fRoom = $("#fRoom"), fRole = $("#fRole");
-  function fillRoomSelect() {
-    const prev = fRoom.value;
-    fRoom.innerHTML = S.rooms.map(r => `<option value="${r.id}">${esc(r.nom)}</option>`).join("");
-    if (roomById(prev)) fRoom.value = prev;
-  }
-  fRole.innerHTML = C.bolimlar.map(b => `<optgroup label="${esc(b.nom)}">${b.xodimlar.map(([k, n]) => `<option value="${k}">${esc(n)}</option>`).join("")}</optgroup>`).join("");
-
-  function addTask(room, role, title, d) {
-    const t = { id: ++S.seq, room, role, title, d, p: 0, src: "men" };
-    S.queue.unshift(t);
-    const id = room + ":" + role;
-    if (!S.workers[id].cur) startTask(id, t, true);
-    save(); render();
-  }
-  $("#taskForm").onsubmit = e => {
-    e.preventDefault();
-    const title = $("#fTitle").value.trim(); if (!title || !fRoom.value) return;
-    addTask(fRoom.value, fRole.value, title, +$("#fDur").value);
-    $("#fTitle").value = "";
-  };
-
-  // ---------- Xodim oynasi ----------
-  const dlg = $("#dlg");
-  function openWorker(id) {
-    const w = S.workers[id], R = ROLE[w.role], room = roomById(w.room);
-    const q = queueFor(w), d = S.done.filter(t => t.room === w.room && t.role === w.role);
-    const dept = C.bolimlar.find(b => b.id === R.bolim);
-    dlg.innerHTML = `<h3>${esc(R.nom)}</h3><div style="color:var(--muted);font-size:12px">${esc(room.nom)} · ${esc(dept.nom)} · <code>${esc(R.key)}</code></div>
-      <p>${w.cur ? "💻 <b>Ishlayapti:</b> " + esc(w.cur.title) : "😴 <b>Uxlayapti</b> — topshiriq kutyapti"}</p>
-      ${w.cur ? `<div class="bar"><i style="width:${(w.cur.p * 100).toFixed(0)}%"></i></div>` : ""}
-      <b>Navbatda (${q.length})</b><ul>${q.map(t => `<li>${esc(t.title)}</li>`).join("") || "<li>—</li>"}</ul>
-      <b>Bajargan (${d.length})</b><ul>${d.slice(-6).reverse().map(t => `<li>${esc(t.title)}</li>`).join("") || "<li>—</li>"}</ul>
-      <form method="dialog" id="qf"><input id="qt" placeholder="Unga yangi topshiriq…" maxlength="120"><button>➕</button></form>
-      <p style="text-align:right;margin:10px 0 0"><button id="cl">Yopish</button></p>`;
-    $("#cl", dlg).onclick = () => dlg.close();
-    $("#qf", dlg).onsubmit = () => { const t = $("#qt", dlg).value.trim(); if (t) addTask(w.room, w.role, t, 75); };
-    dlg.showModal();
-  }
-
-  buildRooms();
-  render();
-  const h = posOf($("#pmHome"), -20, -70);
-  pmEl.style.transition = "none"; pmEl.style.left = h.x + "px"; pmEl.style.top = h.y + "px";
-  setTimeout(pmLoop, 800);
-  setInterval(pmLoop, 1500);
-  window.addEventListener("resize", () => { pmBusy = false; });
+// ---------- Ishga tushirish ----------
+buildRooms(); buildPM(); updNotifBtn(); render();
+let lastT = now(), saveAcc = 0;
+setInterval(() => {
+  const t = now(), dt = Math.min(2, t - lastT); lastT = t;
+  tick(dt); behave(); render(); pmSuggest();
+  if ((saveAcc += dt) > 3) { saveAcc = 0; save(); }
+  $("#clock").textContent = "🕒 " + timeStr();
+}, 300);
+setTimeout(pmLoop, 900); setInterval(pmLoop, 1500);
+let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { snapAll(); PM.busy = false; pmMove(pmHome(), false); }, 200); });
+window.__ofis = { S, VIS, pmAsk };
 })();
 </script>
 </body>

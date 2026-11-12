@@ -4,8 +4,9 @@
 // Bu faylni o'zgartirsangiz, VERSION ni oshiring — sahifa yangi vazifalar bilan qayta boshlanadi.
 
 window.OFIS = {
-  VERSION: 2,
+  VERSION: 3,
 
+  // Har bir xodimning savollari (savollar: [kalit, savol]) — xodim qo'lini ko'taradi, siz javob berasiz.
   // ekran: text | design | video | chart | ads | social | mind | chat | seo
   bolimlar: [
     { id: "bozor", nom: "Bozor razvedkasi", rang: "#ef8a80", ekran: "chart", xodimlar: [
@@ -38,7 +39,8 @@ window.OFIS = {
       ["content-calendar", "Kontent-kalendar menejeri"] ] },
     { id: "smm", nom: "SMM va LinkedIn", rang: "#5fc4c0", ekran: "social", xodimlar: [
       ["social", "SMM menejer"],
-      ["video", "Videograf / montajchi", "video"],
+      ["video", "Videograf (xom video)", "video"],
+      ["editor", "Montajchi (editor)", "video"],
       ["image", "Grafik dizayner", "design"],
       ["community-marketing", "Hamjamiyat menejeri"],
       ["influencer-marketing", "Blogerlar menejeri"],
@@ -89,9 +91,10 @@ window.OFIS = {
         ["marketing-ideas", "2-mavsum \"Keyslar mavsumi\" g'oyalari", 60],
         ["social", "\"Seriya\" Highlights va pinned postlar", 50],
         ["social", "Kalit so'zlarga javob: PROFIL, REJA, HOOK", 45],
-        ["video", "Reels 3/10 joylashga tayyorlash: Sahifa qadoqlash", 50],
-        ["video", "Reels 4/10 montaji: Kontent reja", 100],
-        ["video", "Reels 5/10 montaji: Hook", 100],
+        ["editor", "Reels 3/10 joylashga tayyorlash: Sahifa qadoqlash", 50],
+        ["video", "Reels 4/10 va 5/10 xom videolarini qabul qilish", 40],
+        ["editor", "Reels 4/10 montaji: Kontent reja", 100],
+        ["editor", "Reels 5/10 montaji: Hook", 100],
         ["image", "Oblojkalar: SERIYA 3/10, 4/10, 5/10", 70],
         ["image", "Keys karuseli dizayni", 85],
         ["lead-magnets", "PROFIL: 5 qadamli tekshiruv ro'yxati (PDF)", 60],
@@ -104,6 +107,15 @@ window.OFIS = {
         ["site-architecture", "Saytga \"Lobar Agency\" bloki va \"Bepul audit\" tugmasi", 70],
         ["schema", "Saytga Organization schema", 40],
         ["marketing-council", "Haftalik maslahat: 3 ta mijozga eng qisqa yo'l", 50]
+      ],
+      savollar: [
+        ["pricing", "10 mln so'm — oylik to'lovmi yoki bir martalik? \"Strategiya + audit\" kirish paketi qancha bo'lsin?"],
+        ["copywriting", "Keyslar uchun Quvonch Shifo raqamlarini (lid soni, lid narxi) e'lon qilishga ruxsat bormi?"],
+        ["competitor-profiling", "Instagram ulanishiga ruxsat berasizmi? Busiz 4 ta raqobatchini qo'lda tahlil qilamiz."],
+        ["editor", "Xom videolarni qayerga tashlaysiz: Google Drive papkasimi yoki Telegram?"],
+        ["content-calendar", "Oylik kontent reja Google Sheets'da yuritilsinmi? Yangi jadval ochaymi?"],
+        ["referrals", "Tavsiya qilgan mijozga qanday bonus beramiz: chegirma, qo'shimcha video yoki pul?"],
+        ["image", "Logo bormi? Yo'q bo'lsa, Lobar Agency uchun logo variantlarini chizaylikmi?"]
       ]
     },
     {
@@ -132,9 +144,16 @@ window.OFIS = {
         ["image", "Aktual stories ikonkalari", 50],
         ["image", "O'qituvchi tanishtiruvi shabloni", 60],
         ["video", "Suratga olish kuni: bino va darslar", 110],
-        ["video", "Reels 1 montaji", 80],
-        ["video", "Reels 2 montaji", 80],
+        ["editor", "Reels 1 montaji", 80],
+        ["editor", "Reels 2 montaji", 80],
         ["analytics", "Dekabr hisoboti shabloni", 45]
+      ],
+      savollar: [
+        ["social", "Bugungi obunachi va qamrov statistikasini skrinshot qildingizmi? Dekabr natijasi shunga taqqoslanadi."],
+        ["marketing-plan", "Rahbar bilan uchrashuv qachon? Qabul sanalari va o'tgan yilgi arizalar soni kerak."],
+        ["ads", "Aprel reklamasi uchun rahbar qancha byudjet ajrata oladi?"],
+        ["video", "Suratga olish kuni qachon? O'quvchilarni suratga olishga ruxsat olinganmi?"],
+        ["lead-magnets", "Bepul sinov imtihonini qaysi shanbalarda o'tkazish mumkin?"]
       ]
     }
   ]
