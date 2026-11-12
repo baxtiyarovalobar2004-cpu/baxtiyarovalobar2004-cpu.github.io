@@ -1,4 +1,4 @@
-# AI Marketing Agentlik
+# Lobar Agency — AI marketing agentlik
 
 Claude Code ichida ishlaydigan marketing jamoasi. Uni boshqaradigan direktor va 8 ta bo'lim bor. Rasmdagi 50 ta marketing vazifasi shu bo'limlarga taqsimlangan.
 
