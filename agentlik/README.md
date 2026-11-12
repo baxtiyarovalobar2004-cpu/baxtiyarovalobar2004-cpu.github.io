@@ -30,3 +30,12 @@ Claude Code ichida ishlaydigan marketing jamoasi. Uni boshqaradigan direktor va 
 ## Qoidalar
 - Raqam va faktlar o'ylab topilmaydi. Taxminlar "taxmin" deb belgilanadi.
 - Reklama byudjeti, post joylash, xabar yuborish kabi tashqi harakatlar faqat sizning tasdiqingiz bilan bajariladi.
+
+## Vizual ofis
+
+`agentlik/ofis/index.html` — agentlik ofisi brauzerda:
+- Har bir loyiha alohida xona. Har xonada rasmdagi 48 ta lavozim 8 bo'limga bo'lingan, ustidan project menejer kuzatib yuradi.
+- Ishlayotgan xodim kompyuterda ishlaydi, ishi yo'g'i "zzz" deb uxlaydi. Yangi topshiriq kelsa, uyg'onib ishga tushadi.
+- "➕ Yangi loyiha" tugmasi yangi xona qo'shadi.
+- Doimiy xonalar va vazifalar `agentlik/ofis/vazifalar.js` faylida (o'zgartirgach `VERSION` ni oshiring).
+- Ish jarayoni simulyatsiya: vazifalar haqiqiy rejalardan, progress esa taxminiy.

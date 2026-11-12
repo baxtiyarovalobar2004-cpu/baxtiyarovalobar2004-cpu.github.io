@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Lobar Agency — Ofis</title>
+<link rel="icon" href="../../favicon.svg">
+<style>
+:root {
+  --bg: #1d1b26; --panel: #272434; --line: #3a3650; --text: #f2eee6; --muted: #a59fb8;
+  --ok: #4ade80; --sleep: #8a8aa0; --accent: #f4a261;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 2px solid var(--line); }
+header h1 { margin: 0; font-size: 18px; letter-spacing: .5px; }
+header h1 span { color: var(--accent); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button, select, input { font: inherit; color: var(--text); background: var(--panel); border: 2px solid var(--line); border-radius: 6px; padding: 6px 10px; }
+button { cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.on { background: #2f5d3a; border-color: var(--ok); }
+.clock { color: var(--muted); }
+.stats { color: var(--muted); font-size: 12px; }
+
+/* ===== Ofis ===== */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 16px 0; }
+.tabs button.cur { border-color: var(--accent); background: #3a2f22; }
+.office { position: relative; margin: 12px 16px 16px; border: 4px solid #4b4560; border-radius: 10px; overflow: hidden; background: #3b3550; }
+.lobby { position: relative; height: 116px; background: repeating-linear-gradient(90deg, #c9b99a 0 20px, #bfae8d 20px 40px); display: flex; align-items: flex-end; justify-content: center; gap: 18px; padding: 10px; border-bottom: 6px solid #5c4d80; }
+.lobby .lbl { position: absolute; top: 8px; left: 12px; font-size: 12px; color: #5b4a30; font-weight: 700; }
+.lobby .coffee { font-size: 30px; }
+.pmdesk { width: 160px; height: 26px; background: #8b5e3c; border-radius: 3px; box-shadow: 0 4px 0 #5e3d26; color: #ffe8c2; font-size: 10px; text-align: center; line-height: 26px; }
+#pmHome { position: absolute; left: calc(50% + 70px); bottom: 16px; width: 1px; height: 1px; }
+.room { position: relative; background: var(--floor, #f6e7d2); border-bottom: 10px solid #5c4d80; }
+.room.hidden { display: none; }
+.wall { position: relative; min-height: 92px; background: linear-gradient(#8d7bb0, #7a68a0); border-bottom: 8px solid #5c4d80; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 10px 14px; gap: 10px; }
+.sign { background: #2b2540; color: #ffe8c2; border: 3px solid #a58b5a; padding: 6px 10px; border-radius: 4px; font-weight: 700; font-size: 14px; box-shadow: 0 3px 0 #0003; }
+.sign button { margin-left: 8px; padding: 0 6px; font-size: 11px; }
+.board { background: #fdfbf5; color: #333; border: 3px solid #b9b0a0; border-radius: 3px; padding: 4px 8px; font-size: 11px; line-height: 1.5; min-width: 150px; }
+.board b { color: #111; }
+.window { width: 54px; height: 46px; background: linear-gradient(#bfe3ff, #8fc8f5); border: 4px solid #eee; box-shadow: inset 0 0 0 2px #ccc; position: relative; }
+.window::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: #eee; }
+.floor { padding: 16px 12px 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: 16px;
+  background-image: repeating-conic-gradient(#0000000c 0 25%, transparent 0 50%); background-size: 40px 40px; }
+.dept { border: 3px dashed color-mix(in srgb, var(--dc) 70%, #000 0%); background: color-mix(in srgb, var(--dc) 14%, transparent); border-radius: 10px; padding: 0 6px 12px; }
+.dept h3 { margin: 0 -6px 18px; padding: 4px 10px; font-size: 12px; background: var(--dc); color: #1d1b26; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; }
+.dept .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px 8px; justify-items: center; }
+.plant { position: absolute; bottom: 8px; right: 10px; font-size: 26px; }
+
+/* ===== Ish joyi ===== */
+.station { position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+.tag { font-size: 10px; font-weight: 700; background: #2b2540; color: #fff; padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: flex; align-items: center; gap: 4px; max-width: 128px; overflow: hidden; text-overflow: ellipsis; z-index: 3; }
+.tag .dot { width: 7px; flex: none; height: 7px; border-radius: 50%; background: var(--sleep); flex: none; }
+.station.work .tag .dot { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+.bubble { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #fff; color: #222; font-size: 10px; padding: 3px 6px; border-radius: 6px; width: max-content; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 2px solid #2b2540; z-index: 4; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.station:hover .bubble, .station.show .bubble { opacity: 1; }
+.scene { position: relative; width: 116px; height: 92px; }
+.chair { position: absolute; left: 52px; bottom: 26px; width: 34px; height: 40px; background: #3d3a52; border-radius: 8px 8px 3px 3px; }
+.desk { position: absolute; left: 0; right: 0; bottom: 0; height: 30px; background: #a8754e; border-radius: 3px; box-shadow: inset 0 6px 0 #c08d63, 0 4px 0 #6d4a30; z-index: 2; }
+.keyboard { position: absolute; left: 56px; top: 3px; width: 28px; height: 5px; background: #ddd; border-radius: 1px; }
+.mug { position: absolute; right: 6px; top: -9px; width: 10px; height: 11px; background: #fff; border-radius: 0 0 3px 3px; }
+.mug::after { content: ""; position: absolute; right: -4px; top: 2px; width: 4px; height: 5px; border: 2px solid #fff; border-left: 0; border-radius: 0 3px 3px 0; }
+.monitor { position: absolute; left: 4px; bottom: 28px; width: 50px; height: 38px; background: #222; border-radius: 3px; padding: 3px; z-index: 3; }
+.monitor::after { content: ""; position: absolute; left: 20px; bottom: -6px; width: 10px; height: 6px; background: #444; }
+.screen { position: relative; width: 100%; height: 100%; background: #10131a; overflow: hidden; border-radius: 1px; }
+.station.sleep .screen > * { display: none; }
+.station.sleep .screen { background: #0b0c10; }
+
+/* odamcha */
+.person { position: absolute; left: 56px; bottom: 26px; width: 28px; height: 50px; z-index: 1; }
+.head { position: absolute; left: 4px; top: 0; width: 20px; height: 20px; background: var(--skin); border-radius: 6px; transition: transform .6s; z-index: 2; }
+.hair { position: absolute; left: -1px; top: -2px; width: 22px; height: 9px; background: var(--hair); border-radius: 6px 6px 2px 2px; }
+.eye { position: absolute; top: 9px; width: 3px; height: 3px; background: #222; border-radius: 1px; }
+.eye.l { left: 5px; } .eye.r { left: 12px; }
+.mouth { position: absolute; left: 7px; top: 14px; width: 6px; height: 2px; background: #a0522d; border-radius: 2px; }
+.body { position: absolute; left: 2px; top: 19px; width: 24px; height: 24px; background: var(--shirt); border-radius: 6px 6px 2px 2px; }
+.arm { position: absolute; top: 22px; width: 6px; height: 16px; background: var(--shirt); border-radius: 3px; transform-origin: top center; }
+.arm.l { left: -2px; } .arm.r { left: 24px; }
+.arm::after { content: ""; position: absolute; bottom: -3px; left: 0; width: 6px; height: 5px; background: var(--skin); border-radius: 3px; }
+.station.work .arm.l { animation: type .35s infinite alternate; transform: rotate(-35deg); }
+.station.work .arm.r { animation: type .3s infinite alternate-reverse; transform: rotate(35deg); }
+@keyframes type { from { margin-top: 0; } to { margin-top: 3px; } }
+.station.work .head { animation: nod 2.4s infinite; }
+@keyframes nod { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
+.station.sleep .head { transform: translate(-4px, 16px) rotate(-70deg); }
+.station.sleep .eye { height: 1px; top: 10px; }
+.station.sleep .mouth { width: 3px; height: 3px; border-radius: 50%; left: 8px; }
+.station.sleep .arm.l { transform: rotate(-80deg); top: 26px; }
+.station.sleep .arm.r { transform: rotate(80deg); top: 26px; }
+.zzz { position: absolute; left: 40px; top: 10px; z-index: 5; display: none; font-weight: 700; color: #5b5b80; }
+.station.sleep .zzz { display: block; }
+.zzz span { position: absolute; animation: zz 2.4s infinite; opacity: 0; }
+.zzz span:nth-child(2) { animation-delay: .8s; } .zzz span:nth-child(3) { animation-delay: 1.6s; }
+@keyframes zz { 0% { opacity: 0; transform: translate(0, 10px) scale(.7); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(18px, -26px) scale(1.3); } }
+.wake { position: absolute; left: 62px; top: -4px; font-size: 20px; font-weight: 900; color: #e63946; z-index: 6; animation: pop .9s ease-out forwards; }
+@keyframes pop { 0% { transform: scale(.3); opacity: 0; } 30% { transform: scale(1.3); opacity: 1; } 100% { transform: translateY(-14px); opacity: 0; } }
+.prog { width: 100px; height: 6px; background: #0002; border-radius: 3px; margin-top: 6px; overflow: hidden; }
+.prog i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .5s linear; }
+.note { font-size: 9.5px; color: #6b6380; margin-top: 3px; text-align: center; max-width: 124px; min-height: 13px; }
+
+/* ===== Ekranlar ===== */
+.s-text i { display: block; height: 3px; margin: 3px 2px; background: #9ad; border-radius: 1px; animation: typing 3s steps(8) infinite; }
+.s-text i:nth-child(2) { animation-delay: .6s; } .s-text i:nth-child(3) { animation-delay: 1.2s; } .s-text i:nth-child(4) { animation-delay: 1.8s; }
+@keyframes typing { from { width: 0; } to { width: 90%; } }
+.s-design { background: #f7f3ea !important; }
+.s-design i { position: absolute; border-radius: 2px; animation: hue 4s infinite; }
+.s-design i:nth-child(1) { left: 3px; top: 3px; width: 18px; height: 14px; background: #e76f51; }
+.s-design i:nth-child(2) { left: 24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: #2a9d8f; animation-delay: 1s; }
+.s-design i:nth-child(3) { left: 4px; top: 20px; width: 34px; height: 5px; background: #264653; animation-delay: 2s; }
+.s-design i:nth-child(4) { left: 30px; top: 18px; width: 4px; height: 6px; background: #000; border-radius: 0; animation: cursor 3s infinite; }
+@keyframes hue { 50% { filter: hue-rotate(120deg); } }
+@keyframes cursor { 0% { transform: translate(0,0); } 50% { transform: translate(-22px,-10px); } 100% { transform: translate(0,0); } }
+.s-video i:nth-child(1) { position: absolute; left: 3px; top: 3px; right: 3px; height: 14px; background: linear-gradient(90deg, #355070, #6d597a, #b56576); animation: hue 3s infinite; }
+.s-video i:nth-child(2) { position: absolute; left: 3px; right: 3px; bottom: 4px; height: 4px; background: #e9c46a; }
+.s-video i:nth-child(3) { position: absolute; left: 3px; right: 10px; bottom: 10px; height: 3px; background: #2a9d8f; }
+.s-video i:nth-child(4) { position: absolute; bottom: 2px; width: 2px; height: 14px; background: #e63946; animation: play 2.5s linear infinite; }
+@keyframes play { from { left: 3px; } to { left: 40px; } }
+.s-chart { display: flex; align-items: flex-end; gap: 3px; padding: 3px; }
+.s-chart i { flex: 1; background: #4ade80; animation: bar 1.8s infinite alternate; }
+.s-chart i:nth-child(2) { animation-delay: .3s; background: #60a5fa; } .s-chart i:nth-child(3) { animation-delay: .6s; } .s-chart i:nth-child(4) { animation-delay: .9s; background: #fbbf24; }
+@keyframes bar { from { height: 20%; } to { height: 95%; } }
+.s-ads i:nth-child(1) { position: absolute; left: 3px; top: 3px; width: 18px; height: 22px; background: #fff; border-radius: 2px; }
+.s-ads i:nth-child(1)::after { content: "AD"; position: absolute; left: 3px; top: 6px; font-size: 7px; color: #f4a261; font-weight: 900; }
+.s-ads i:nth-child(2) { position: absolute; left: 24px; bottom: 4px; width: 16px; height: 2px; background: #4ade80; transform-origin: left; animation: rise 2s infinite alternate; }
+.s-ads i:nth-child(3) { position: absolute; left: 24px; top: 4px; font-style: normal; font-size: 7px; color: #4ade80; }
+@keyframes rise { from { transform: rotate(-10deg); } to { transform: rotate(-45deg); } }
+.s-social { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 3px; }
+.s-social i { background: #e85d9a; border-radius: 1px; animation: hue 3s infinite; }
+.s-social i:nth-child(2n) { animation-delay: 1s; background: #f4a261; }
+.s-mind i { position: absolute; width: 8px; height: 6px; border-radius: 2px; background: #b392f0; }
+.s-mind i:nth-child(1) { left: 17px; top: 11px; width: 10px; background: #fbbf24; animation: hue 2s infinite; }
+.s-mind i:nth-child(2) { left: 3px; top: 3px; } .s-mind i:nth-child(3) { left: 32px; top: 3px; } .s-mind i:nth-child(4) { left: 3px; top: 22px; } .s-mind i:nth-child(5) { left: 32px; top: 22px; }
+.s-chat i { display: block; height: 6px; margin: 3px; border-radius: 3px; background: #60a5fa; width: 60%; animation: typing 2.5s infinite; }
+.s-chat i:nth-child(2n) { margin-left: auto; background: #4ade80; }
+.s-seo i:nth-child(1) { position: absolute; left: 4px; top: 3px; width: 26px; height: 5px; background: #fff; border-radius: 3px; }
+.s-seo i:nth-child(2), .s-seo i:nth-child(3), .s-seo i:nth-child(4) { display: block; position: absolute; left: 4px; height: 3px; background: #4ade80; animation: typing 3s infinite; }
+.s-seo i:nth-child(2) { top: 12px; } .s-seo i:nth-child(3) { top: 18px; animation-delay: .5s; background: #60a5fa; } .s-seo i:nth-child(4) { top: 24px; animation-delay: 1s; background: #60a5fa; }
+
+/* ===== Project menejer ===== */
+#pm { position: absolute; z-index: 20; width: 40px; height: 70px; transition: left 2.6s linear, top 2.6s linear; pointer-events: none; }
+#pm .tag { position: absolute; bottom: 74px; left: 50%; transform: translateX(-50%); background: #e63946; }
+#pm .bubble { top: -52px; opacity: 0; }
+#pm.talk .bubble { opacity: 1; }
+#pm .person { left: 6px; bottom: 0; height: 70px; }
+#pm .leg { position: absolute; top: 42px; width: 8px; height: 20px; background: #2b2d42; border-radius: 2px; transform-origin: top center; }
+#pm .leg.l { left: 5px; } #pm .leg.r { left: 15px; }
+#pm .leg::after { content: ""; position: absolute; bottom: -3px; left: -1px; width: 10px; height: 4px; background: #111; border-radius: 2px; }
+#pm.walk .leg.l { animation: step .4s infinite alternate; } #pm.walk .leg.r { animation: step .4s infinite alternate-reverse; }
+#pm.walk .arm.l { animation: step .4s infinite alternate-reverse; } #pm.walk .arm.r { animation: step .4s infinite alternate; }
+@keyframes step { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
+#pm .clip { position: absolute; left: 22px; top: 30px; width: 10px; height: 13px; background: #fff; border: 2px solid #8b5e3c; border-radius: 1px; z-index: 3; }
+
+/* ===== Panellar ===== */
+.panels { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 16px; margin: 0 16px 24px; }
+.panel { background: var(--panel); border: 2px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.panel h2 { margin: 0 0 10px; font-size: 14px; color: var(--accent); }
+.panel form { display: grid; gap: 8px; }
+.panel form input, .panel form select { width: 100%; }
+.list { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow: auto; font-size: 12px; }
+.list li { padding: 6px 0; border-bottom: 1px dashed var(--line); display: flex; gap: 8px; align-items: baseline; }
+.list li .who { color: var(--muted); flex: none; }
+.list li.me .who::after { content: " · siz"; color: var(--accent); }
+.list li button { margin-left: auto; padding: 0 6px; font-size: 11px; }
+.empty { color: var(--muted); font-size: 12px; }
+.hint { color: var(--muted); font-size: 11.5px; margin: 0 16px 16px; }
+
+/* modal */
+dialog { background: var(--panel); color: var(--text); border: 2px solid var(--accent); border-radius: 10px; max-width: 420px; width: 92vw; }
+dialog::backdrop { background: #0008; }
+dialog h3 { margin: 0 0 6px; }
+dialog .bar { height: 8px; background: #0004; border-radius: 4px; overflow: hidden; margin: 6px 0 10px; }
+dialog .bar i { display: block; height: 100%; background: var(--ok); }
+dialog ul { padding-left: 18px; margin: 4px 0 10px; font-size: 12px; }
+dialog form { display: flex; gap: 6px; }
+dialog form input { flex: 1; }
+
+@media (max-width: 960px) {
+  .panels { grid-template-columns: 1fr; }
+  .floor { grid-template-columns: 1fr; }
+}
+@media (max-width: 420px) { .dept .grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>🏢 <span>Lobar Agency</span> — ofis</h1>
+  <div class="controls">
+    <span class="clock" id="clock"></span>
+    <span class="stats" id="stats"></span>
+    <button id="addRoomBtn" title="Yangi loyiha uchun xona ochish">➕ Yangi loyiha</button>
+    <button id="autoBtn" title="Bo'sh xodim navbatdagi vazifani o'zi oladi">⚙️ Avto: ON</button>
+    <button id="speedBtn" title="Simulyatsiya tezligi">⏩ 1x</button>
+    <button id="pauseBtn">⏸ Pauza</button>
+    <button id="resetBtn" title="Hamma narsani rejalardagi boshlang'ich holatga qaytarish">↺ Qayta</button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<div class="office" id="office">
+  <div class="lobby"><div class="lbl">🛋 Qabulxona · yo'lak</div><div class="coffee">☕</div><div class="pmdesk">Project menejer stoli</div><div class="coffee">🪴</div><div id="pmHome"></div></div>
+  <div id="rooms"></div>
+  <div id="pm">
+    <div class="tag"><span class="dot" style="background:#fff"></span>Project menejer</div>
+    <div class="bubble" id="pmSay"></div>
+    <div class="person" style="--skin:#f1c7a3;--hair:#2b1d14;--shirt:#1d3557">
+      <div class="leg l"></div><div class="leg r"></div>
+      <div class="arm l"></div><div class="arm r"></div>
+      <div class="body"></div>
+      <div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="mouth"></div></div>
+      <div class="clip"></div>
+    </div>
+  </div>
+</div>
+
+<div class="panels">
+  <div class="panel">
+    <h2>📝 Yangi topshiriq berish</h2>
+    <form id="taskForm">
+      <select id="fRoom"></select>
+      <select id="fRole"></select>
+      <input id="fTitle" placeholder="Masalan: Yangi yil uchun Reels ssenariysi" required maxlength="120">
+      <select id="fDur">
+        <option value="40">Qisqa vazifa</option>
+        <option value="75" selected>O'rtacha vazifa</option>
+        <option value="120">Katta vazifa</option>
+      </select>
+      <button type="submit">➕ Topshiriq berish</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>📋 Navbatda</h2>
+    <ul class="list" id="queue"></ul>
+  </div>
+  <div class="panel">
+    <h2>✅ Bajarildi</h2>
+    <ul class="list" id="done"></ul>
+  </div>
+</div>
+<p class="hint">Bu vizual ofis: vazifalar agentlik rejalaridan olingan, ish jarayoni simulyatsiya qilinadi. Har bir xonada rasmdagi 48 ta lavozim 8 bo'limga bo'lingan. Odamchani bosing — vazifalari ochiladi va unga topshiriq berasiz. Holat shu brauzerda saqlanadi.</p>
+
+<dialog id="dlg"></dialog>
+
+<script src="vazifalar.js"></script>
+<script>
+(() => {
+  const C = window.OFIS;
+  const KEY = "lobarOfis.state";
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const IDLE_BEFORE_NEXT = 4;            // vazifalar orasida uxlab olish (soniya)
+  const ROOM_COLORS = ["#f6e7d2", "#dfeaf5", "#e4f2df", "#f5e1ea", "#efe6fa", "#fff3c4", "#e0f4f3"];
+
+  // ---------- Rollar ----------
+  const SKIN = ["#f1c7a3", "#e9b48a", "#f3cfb1", "#d9a27c", "#c68a64"];
+  const HAIR = ["#1f1a17", "#3b2a20", "#5a3825", "#7a3e1d", "#2f2f2f", "#111", "#6b4226", "#a0522d"];
+  const ROLE = {}, ROLE_ORDER = [];
+  C.bolimlar.forEach((b, bi) => b.xodimlar.forEach(([key, nom, ekran], i) => {
+    const h = [...key].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+    ROLE[key] = { key, nom, bolim: b.id, ekran: ekran || b.ekran, teri: SKIN[h % SKIN.length], soch: HAIR[(h >> 3) % HAIR.length],
+      kiyim: `hsl(${(bi * 45 + i * 9 + (h % 20)) % 360} 55% 48%)` };
+    ROLE_ORDER.push(key);
+  }));
+
+  // ---------- Holat ----------
+  function seedRoom(S, r, custom) {
+    S.rooms.push({ id: r.id, nom: r.nom, rang: r.rang, uyquIzoh: r.uyquIzoh || {}, custom: !!custom });
+    let n = 0;
+    for (const k of ROLE_ORDER) S.workers[r.id + ":" + k] = { room: r.id, role: k, cur: null, idle: (n++ % 4) - 1 };
+    for (const [role, title, d] of r.vazifalar || []) if (ROLE[role]) S.queue.push({ id: ++S.seq, room: r.id, role, title, d, p: 0, src: "reja" });
+  }
+  function fresh() {
+    const S = { v: C.VERSION, auto: true, speed: 1, paused: false, rooms: [], workers: {}, queue: [], done: [], seq: 0, view: "all" };
+    for (const r of C.xonalar) seedRoom(S, r);
+    return S;
+  }
+  function load() {
+    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === C.VERSION) return s; } catch (e) {}
+    return fresh();
+  }
+  let S = load();
+  const save = () => localStorage.setItem(KEY, JSON.stringify(S));
+  const roomById = id => S.rooms.find(r => r.id === id);
+
+  // ---------- Chizish ----------
+  const office = $("#office"), roomsEl = $("#rooms"), pmEl = $("#pm");
+  let stationEls = {};
+  const SCREEN_ITEMS = { text: 4, design: 4, video: 4, chart: 4, ads: 3, social: 6, mind: 5, chat: 4, seo: 4 };
+
+  function stationHTML(R) {
+    return `<div class="bubble"></div><div class="tag"><span class="dot"></span>${esc(R.nom)}</div>
+      <div class="scene"><div class="chair"></div>
+        <div class="person" style="--skin:${R.teri};--hair:${R.soch};--shirt:${R.kiyim}">
+          <div class="arm l"></div><div class="arm r"></div><div class="body"></div>
+          <div class="head"><div class="hair"></div><div class="eye l"></div><div class="eye r"></div><div class="mouth"></div></div></div>
+        <div class="monitor"><div class="screen s-${R.ekran}">${"<i></i>".repeat(SCREEN_ITEMS[R.ekran] || 4)}</div></div>
+        <div class="desk"><div class="keyboard"></div><div class="mug"></div></div>
+        <div class="zzz"><span>z</span><span>z</span><span>Z</span></div></div>
+      <div class="prog"><i></i></div><div class="note"></div>`;
+  }
+
+  function buildRooms() {
+    roomsEl.innerHTML = "";
+    stationEls = {};
+    for (const r of S.rooms) {
+      const sec = document.createElement("section");
+      sec.className = "room"; sec.dataset.room = r.id; sec.style.setProperty("--floor", r.rang);
+      sec.innerHTML = `<div class="wall"><div class="sign">🏷 ${esc(r.nom)}${r.custom ? ` <button data-delroom="${r.id}" title="Xonani o'chirish">🗑</button>` : ""}</div>
+        <div class="window"></div><div class="board" data-board="${r.id}"></div></div><div class="floor"></div><div class="plant">🪴</div>`;
+      const floor = $(".floor", sec);
+      for (const b of C.bolimlar) {
+        const d = document.createElement("div");
+        d.className = "dept"; d.style.setProperty("--dc", b.rang);
+        d.innerHTML = `<h3><span>${esc(b.nom)}</span><span data-dept="${r.id}:${b.id}"></span></h3><div class="grid"></div>`;
+        const grid = $(".grid", d);
+        for (const [key] of b.xodimlar) {
+          const id = r.id + ":" + key, el = document.createElement("div");
+          el.className = "station sleep"; el.dataset.id = id;
+          el.innerHTML = stationHTML(ROLE[key]);
+          el.addEventListener("click", () => openWorker(id));
+          grid.appendChild(el);
+          stationEls[id] = { el, bubble: $(".bubble", el), bar: $(".prog i", el), note: $(".note", el), last: "" };
+        }
+        floor.appendChild(d);
+      }
+      roomsEl.appendChild(sec);
+    }
+    buildTabs(); fillRoomSelect(); applyView(); listSig = "";
+  }
+  roomsEl.addEventListener("click", e => {
+    const id = e.target.dataset && e.target.dataset.delroom;
+    if (!id) return;
+    e.stopPropagation();
+    const r = roomById(id);
+    if (!confirm(`"${r.nom}" xonasini o'chiraymi? Uning vazifalari ham o'chadi.`)) return;
+    S.rooms = S.rooms.filter(x => x.id !== id);
+    for (const k of Object.keys(S.workers)) if (S.workers[k].room === id) delete S.workers[k];
+    S.queue = S.queue.filter(t => t.room !== id);
+    S.done = S.done.filter(t => t.room !== id);
+    if (S.view === id) S.view = "all";
+    save(); buildRooms(); render();
+  });
+
+  function buildTabs() {
+    $("#tabs").innerHTML = `<button data-view="all">🏢 Hamma xonalar</button>` +
+      S.rooms.map(r => `<button data-view="${r.id}">🚪 ${esc(r.nom)}</button>`).join("");
+  }
+  $("#tabs").addEventListener("click", e => { const v = e.target.dataset.view; if (v) { S.view = v; save(); applyView(); } });
+  function applyView() {
+    if (S.view !== "all" && !roomById(S.view)) S.view = "all";
+    for (const sec of roomsEl.children) sec.classList.toggle("hidden", S.view !== "all" && sec.dataset.room !== S.view);
+    for (const b of $("#tabs").children) b.classList.toggle("cur", b.dataset.view === S.view);
+    pmBusy = false;
+  }
+
+  function render() {
+    for (const [id, w] of Object.entries(S.workers)) {
+      const st = stationEls[id]; if (!st) continue;
+      const room = roomById(w.room), working = !!w.cur, q = working ? 0 : queueFor(w).length;
+      const key = working ? "w" + w.cur.id : "s" + q;
+      st.el.classList.toggle("work", working);
+      st.el.classList.toggle("sleep", !working);
+      st.bar.style.width = working ? Math.min(100, w.cur.p * 100).toFixed(1) + "%" : "0%";
+      if (st.last !== key) {
+        st.last = key;
+        if (working) { st.bubble.textContent = "💻 " + w.cur.title; st.note.textContent = w.cur.title; }
+        else {
+          st.bubble.textContent = q ? "😴 Navbatda " + q + " ta vazifa" : "😴 Vazifa yo'q";
+          st.note.textContent = (!q && room.uyquIzoh[w.role]) || (q ? "zzz… navbatda " + q : "zzz…");
+        }
+      }
+    }
+    for (const r of S.rooms) {
+      const ws = Object.values(S.workers).filter(w => w.room === r.id), ishda = ws.filter(w => w.cur).length;
+      const board = $(`[data-board="${r.id}"]`);
+      if (board) board.innerHTML = `👷 Ishda: <b>${ishda}</b> · 😴 Uxlayapti: <b>${ws.length - ishda}</b><br>📋 Navbatda: <b>${S.queue.filter(t => t.room === r.id).length}</b> · ✅ Bajarildi: <b>${S.done.filter(t => t.room === r.id).length}</b>`;
+      for (const b of C.bolimlar) {
+        const el = $(`[data-dept="${r.id}:${b.id}"]`);
+        if (el) el.textContent = ws.filter(w => w.cur && ROLE[w.role].bolim === b.id).length + "/" + b.xodimlar.length + " ishda";
+      }
+    }
+    renderLists();
+    $("#autoBtn").textContent = "⚙️ Avto: " + (S.auto ? "ON" : "OFF");
+    $("#autoBtn").classList.toggle("on", S.auto);
+    $("#speedBtn").textContent = "⏩ " + S.speed + "x";
+    $("#pauseBtn").textContent = S.paused ? "▶️ Davom" : "⏸ Pauza";
+    const all = Object.values(S.workers), w = all.filter(x => x.cur).length;
+    $("#stats").textContent = `🚪 ${S.rooms.length} xona · 👷 ${w} ishlayapti · 😴 ${all.length - w} uxlayapti`;
+  }
+
+  let listSig = "";
+  function renderLists() {
+    const sig = S.queue.map(t => t.id).join(",") + "|" + S.done.length + "|" + S.rooms.length;
+    if (sig === listSig) return;
+    listSig = sig;
+    const who = t => `[${(roomById(t.room) || { nom: "?" }).nom.split(" ")[0]}] ${ROLE[t.role].nom}`;
+    $("#queue").innerHTML = S.queue.length ? S.queue.map(t =>
+      `<li class="${t.src === "men" ? "me" : ""}"><span class="who">${esc(who(t))}</span><span>${esc(t.title)}</span><button data-del="${t.id}" title="O'chirish">✕</button></li>`).join("")
+      : `<li class="empty">Navbat bo'sh — hamma vazifalar taqsimlangan.</li>`;
+    $("#done").innerHTML = S.done.length ? S.done.slice().reverse().slice(0, 80).map(t =>
+      `<li class="${t.src === "men" ? "me" : ""}"><span class="who">${esc(t.at)} ${esc(who(t))}</span><span>${esc(t.title)}</span></li>`).join("")
+      : `<li class="empty">Hali hech narsa tugamadi.</li>`;
+  }
+  $("#queue").addEventListener("click", e => {
+    const id = +e.target.dataset.del; if (!id) return;
+    S.queue = S.queue.filter(t => t.id !== id); save(); render();
+  });
+
+  // ---------- Mantiq ----------
+  const queueFor = w => S.queue.filter(t => t.room === w.room && t.role === w.role);
+  const timeStr = () => new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" });
+
+  function startTask(id, t, flash) {
+    const w = S.workers[id];
+    S.queue = S.queue.filter(x => x.id !== t.id);
+    w.cur = t; w.idle = 0;
+    if (flash && stationEls[id]) {
+      const m = document.createElement("div");
+      m.className = "wake"; m.textContent = "!";
+      $(".scene", stationEls[id].el).appendChild(m);
+      setTimeout(() => m.remove(), 1000);
+    }
+  }
+  function tick(dt) {
+    if (S.paused) return;
+    for (const [id, w] of Object.entries(S.workers)) {
+      if (w.cur) {
+        w.cur.p += (dt * S.speed) / w.cur.d;
+        if (w.cur.p >= 1) {
+          S.done.push({ ...w.cur, p: 1, at: timeStr() });
+          if (S.done.length > 300) S.done.shift();
+          w.cur = null; w.idle = 0;
+        }
+      } else {
+        w.idle += dt * S.speed;
+        const next = queueFor(w)[0];
+        if (next && (next.src === "men" || (S.auto && w.idle >= IDLE_BEFORE_NEXT))) startTask(id, next, true);
+      }
+    }
+  }
+  let lastT = performance.now(), saveAcc = 0;
+  setInterval(() => {
+    const now = performance.now(), dt = Math.min(2, (now - lastT) / 1000);
+    lastT = now; tick(dt); render();
+    if ((saveAcc += dt) > 3) { saveAcc = 0; save(); }
+    $("#clock").textContent = "🕒 " + timeStr();
+  }, 400);
+
+  // ---------- Project menejer ----------
+  const PHRASES = ["Qalay ketyapti? 👀", "Zo'r chiqyapti! 👍", "Muddatni unutmang ⏰", "Hisobotga qo'shaman 📋", "Raqamlar qani? 📊", "Mijoz kutyapti 🙂", "Yana ozgina qoldi 💪", "Brifni tekshirdingizmi? 📄"];
+  const IDLE_PHRASES = ["Hamma dam olyapti… ☕", "Yangi topshiriq kutyapmiz", "Navbatni tekshiryapman 📋"];
+  let pmBusy = false;
+  const posOf = (el, dx = 0, dy = 0) => { const o = office.getBoundingClientRect(), r = el.getBoundingClientRect(); return { x: r.left - o.left + dx, y: r.top - o.top + dy }; };
+  function pmGo(p, cb) {
+    const cur = { x: parseFloat(pmEl.style.left) || 0, y: parseFloat(pmEl.style.top) || 0 };
+    const dur = Math.max(0.6, Math.min(4, Math.hypot(p.x - cur.x, p.y - cur.y) / 160));
+    pmEl.style.transition = `left ${dur}s linear, top ${dur}s linear`;
+    pmEl.classList.add("walk");
+    pmEl.style.left = p.x + "px"; pmEl.style.top = p.y + "px";
+    setTimeout(() => { pmEl.classList.remove("walk"); cb && cb(); }, dur * 1000);
+  }
+  function pmSay(t, ms = 2600) { $("#pmSay").textContent = t; pmEl.classList.add("talk"); setTimeout(() => pmEl.classList.remove("talk"), ms); }
+  function pmLoop() {
+    if (pmBusy) return;
+    pmBusy = true;
+    const working = Object.entries(S.workers).filter(([id, w]) => w.cur && stationEls[id] && stationEls[id].el.offsetParent);
+    if (!S.paused && working.length) {
+      const [id, w] = working[Math.floor(Math.random() * working.length)];
+      const el = stationEls[id].el;
+      pmGo(posOf(el, el.offsetWidth - 18, 30), () => {
+        pmSay(w.cur ? (w.cur.p > 0.8 ? "Deyarli tayyor! 🎉" : PHRASES[Math.floor(Math.random() * PHRASES.length)]) : "Barakalla! ✅");
+        setTimeout(() => (pmBusy = false), 2800);
+      });
+    } else {
+      pmGo(posOf($("#pmHome"), -20, -70), () => { pmSay(IDLE_PHRASES[Math.floor(Math.random() * IDLE_PHRASES.length)]); setTimeout(() => (pmBusy = false), 3000); });
+    }
+  }
+
+  // ---------- Boshqaruv ----------
+  $("#autoBtn").onclick = () => { S.auto = !S.auto; save(); render(); };
+  $("#speedBtn").onclick = () => { S.speed = { 1: 3, 3: 10, 10: 1 }[S.speed] || 1; save(); render(); };
+  $("#pauseBtn").onclick = () => { S.paused = !S.paused; save(); render(); };
+  $("#resetBtn").onclick = () => { if (confirm("Ofisni boshlang'ich holatga qaytaraymi? Siz qo'shgan xonalar va topshiriqlar o'chadi.")) { S = fresh(); save(); buildRooms(); render(); } };
+  $("#addRoomBtn").onclick = () => {
+    const nom = (prompt("Yangi loyiha (xona) nomi:", "") || "").trim().slice(0, 60);
+    if (!nom) return;
+    const id = "x" + Date.now().toString(36);
+    seedRoom(S, { id, nom, rang: ROOM_COLORS[S.rooms.length % ROOM_COLORS.length] }, true);
+    S.view = id; save(); buildRooms(); render();
+    roomsEl.lastElementChild.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const fRoom = $("#fRoom"), fRole = $("#fRole");
+  function fillRoomSelect() {
+    const prev = fRoom.value;
+    fRoom.innerHTML = S.rooms.map(r => `<option value="${r.id}">${esc(r.nom)}</option>`).join("");
+    if (roomById(prev)) fRoom.value = prev;
+  }
+  fRole.innerHTML = C.bolimlar.map(b => `<optgroup label="${esc(b.nom)}">${b.xodimlar.map(([k, n]) => `<option value="${k}">${esc(n)}</option>`).join("")}</optgroup>`).join("");
+
+  function addTask(room, role, title, d) {
+    const t = { id: ++S.seq, room, role, title, d, p: 0, src: "men" };
+    S.queue.unshift(t);
+    const id = room + ":" + role;
+    if (!S.workers[id].cur) startTask(id, t, true);
+    save(); render();
+  }
+  $("#taskForm").onsubmit = e => {
+    e.preventDefault();
+    const title = $("#fTitle").value.trim(); if (!title || !fRoom.value) return;
+    addTask(fRoom.value, fRole.value, title, +$("#fDur").value);
+    $("#fTitle").value = "";
+  };
+
+  // ---------- Xodim oynasi ----------
+  const dlg = $("#dlg");
+  function openWorker(id) {
+    const w = S.workers[id], R = ROLE[w.role], room = roomById(w.room);
+    const q = queueFor(w), d = S.done.filter(t => t.room === w.room && t.role === w.role);
+    const dept = C.bolimlar.find(b => b.id === R.bolim);
+    dlg.innerHTML = `<h3>${esc(R.nom)}</h3><div style="color:var(--muted);font-size:12px">${esc(room.nom)} · ${esc(dept.nom)} · <code>${esc(R.key)}</code></div>
+      <p>${w.cur ? "💻 <b>Ishlayapti:</b> " + esc(w.cur.title) : "😴 <b>Uxlayapti</b> — topshiriq kutyapti"}</p>
+      ${w.cur ? `<div class="bar"><i style="width:${(w.cur.p * 100).toFixed(0)}%"></i></div>` : ""}
+      <b>Navbatda (${q.length})</b><ul>${q.map(t => `<li>${esc(t.title)}</li>`).join("") || "<li>—</li>"}</ul>
+      <b>Bajargan (${d.length})</b><ul>${d.slice(-6).reverse().map(t => `<li>${esc(t.title)}</li>`).join("") || "<li>—</li>"}</ul>
+      <form method="dialog" id="qf"><input id="qt" placeholder="Unga yangi topshiriq…" maxlength="120"><button>➕</button></form>
+      <p style="text-align:right;margin:10px 0 0"><button id="cl">Yopish</button></p>`;
+    $("#cl", dlg).onclick = () => dlg.close();
+    $("#qf", dlg).onsubmit = () => { const t = $("#qt", dlg).value.trim(); if (t) addTask(w.room, w.role, t, 75); };
+    dlg.showModal();
+  }
+
+  buildRooms();
+  render();
+  const h = posOf($("#pmHome"), -20, -70);
+  pmEl.style.transition = "none"; pmEl.style.left = h.x + "px"; pmEl.style.top = h.y + "px";
+  setTimeout(pmLoop, 800);
+  setInterval(pmLoop, 1500);
+  window.addEventListener("resize", () => { pmBusy = false; });
+})();
+</script>
+</body>
+</html>

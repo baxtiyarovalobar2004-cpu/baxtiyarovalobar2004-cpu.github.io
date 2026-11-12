@@ -1,6 +1,6 @@
 # Mijoz briefi: Lobar Agency (o'zimiz)
 
-> Manba: lobar shaxsiy sayti (index.html). `[?]` — Lobar tasdiqlashi yoki to'ldirishi kerak.
+> Manba: shaxsiy sayt (index.html) va **`brend-brif-reels-seriya.md`** (kontent uslubi, vizual brend, 10 qismli Reels seriyasi, profil statistikasi — batafsil o'sha faylda). `[?]` — Lobar tasdiqlashi yoki to'ldirishi kerak.
 
 ## Biznes
 - **Nomi:** Lobar Agency
@@ -32,11 +32,12 @@
 - **Bizning farqimiz:** natija raqam bilan o'lchanadi (lid soni, lid narxi, kelgan bemor/o'quvchi); SOSTAC asosidagi strategiya; tibbiyot va ta'lim sohasida tajriba (Quvonch Shifo Medical Center — 7 shifokor, 6 rubrika); strategiya, ssenariy, target va hisobot bitta joyda; AI yordamida tezroq va arzonroq ishlash
 
 ## Brend
-- **Ovoz ohangi:** ekspert, aniq, raqamlarga tayangan, samimiy [?]
-- **Ranglar, shrift, logo:** [?] (saytda Xiva girih naqshi motivi ishlatilgan)
+- **Ovoz ohangi:** foydali, sodda tilda, reklama kabi eshitilmaydi; hook + ishonchli dalil + amaliy qadamlar; har video bitta aniq keys atrofida
+- **Ranglar, shrift:** aksent sariq #FFC93C, qora fon, oq matn; yaxshi #3DDC84, yomon #FF5A5F; shisha kartochkalar; Montserrat 800–900. Artlist ishlatilmaydi
 - **Taqiqlangan narsalar:** mijozlarning maxfiy raqamlarini ruxsatsiz e'lon qilish
 
 ## Hozirgi holat
 - **Hozirgi loyihalar:** Quvonch Shifo Medical Center (asosiy), dietolog Iroda Baxtiyorovna, PM Indira Hair, Dongfeng avtosaloni + UrDU akademik litseyi (yangi, 2026-noyabr)
 - **Ishlayotgan kanallar:** shaxsiy sayt, Instagram, Telegram, LinkedIn. Agentlik **shaxsiy sahifa** (@smm_lobar_baxtiyarova) orqali olib boriladi — alohida akkaunt ochilmaydi
-- **Avval nima sinab ko'rilgan, nima ishlamagan:** [?]
+- **Kontent natijalari (2026-10-28):** eng kuchli — trend/foydali funksiya (Instagram xarita, 251.6K) va sahnali skitlar (20.3K); seriya 1/10 — 587, 2/10 — 933 ko'rish
+- **Seriya holati:** 1/10, 2/10 joylangan; 3/10 montaj qilingan; 4–10 ssenariylari tayyor
