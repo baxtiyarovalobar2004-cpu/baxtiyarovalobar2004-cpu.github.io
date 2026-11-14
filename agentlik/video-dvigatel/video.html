@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:Inter,system-ui,sans-serif}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden}
+#stage svg.main{position:absolute;left:0;top:0;width:1080px;height:1920px}
+.hdr{position:absolute;left:60px;right:60px;top:250px;text-align:center;color:#fff;font-weight:900;font-size:66px;line-height:1.12;text-shadow:0 4px 0 #000,0 0 18px #000a}
+.hdr b{color:#ffc93c}
+.cap{position:absolute;left:70px;right:70px;top:1300px;text-align:center}
+.cap .who{display:inline-block;font-weight:900;font-size:30px;padding:6px 18px;border-radius:12px;margin-bottom:12px;letter-spacing:1px}
+.cap .txt{display:inline-block;background:rgba(10,8,18,.62);border-radius:22px;padding:14px 24px;color:#fff;font-weight:800;font-size:52px;line-height:1.18;text-shadow:0 3px 0 #000,0 0 10px #000}
+.cap .txt b{color:#ffc93c}
+.card{position:absolute;background:rgba(22,20,32,.92);border:3px solid #ffffff22;border-radius:34px;box-shadow:0 20px 60px #000a;color:#fff;padding:34px 38px}
+.pill{display:inline-block;background:#ffc93c;color:#16141c;font-weight:900;border-radius:999px;padding:10px 26px;font-size:36px}
+</style></head>
+<body><div id="stage"></div>
+<script>
+// ===================== yordamchilar =====================
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), lerp=(a,b,t)=>a+(b-a)*t, ease=t=>{t=clamp(t);return t*t*(3-2*t)};
+const pop=(t)=>{t=clamp(t);return t<.6?ease(t/.6)*1.12:lerp(1.12,1,ease((t-.6)/.4))};
+const sh=(hex,p)=>{const n=parseInt(hex.slice(1),16);const f=c=>Math.max(0,Math.min(255,Math.round(c*(1+p))));return"#"+[n>>16,(n>>8)&255,n&255].map(f).map(x=>x.toString(16).padStart(2,"0")).join("")};
+let D=null; // timeline + envelope
+window.init=d=>{D=d};
+const env=(who,t)=>{const a=D.env[who];const i=Math.floor(t*30);return a[i]||0};
+
+// ===================== katta personaj (Lobar, Kamola) =====================
+const LOBAR={id:"lb",skin:"#e8bf9f",skinD:"#d4a583",hair:"#1a1210",hairL:"#3b2a22",style:"lobar",outfit:"stripe",shirt:"#b4c3e0",stripe:"#7f92bd",glasses:true,watch:true};
+const KAMOLA={id:"km",skin:"#eec09a",skinD:"#d9a57d",hair:"#2a1a12",hairL:"#4a3226",style:"bun",outfit:"suit",suit:"#2b2a4a",glasses:false,watch:false};
+function bigHair(c,front){
+  if(c.style==="lobar"){
+    if(!front) return `<path d="M128 175 Q112 90 200 84 Q290 90 274 178 Q288 222 284 258 Q304 284 302 314 Q284 306 274 296 Q266 310 250 304 L150 304 Q134 310 126 296 Q116 306 98 314 Q96 284 116 258 Q112 222 128 175Z" fill="${c.hair}"/>`;
+    return `<path d="M134 162 Q138 96 200 94 Q264 96 268 162 Q244 116 198 112 Q156 116 134 162Z" fill="${c.hair}"/>
+    <path d="M194 98 Q148 106 134 164 Q128 204 136 244 Q146 200 156 168 Q170 128 194 98Z" fill="${c.hair}"/><path d="M196 100 Q168 128 146 150 Q172 136 194 132Z" fill="${c.hair}"/>
+    <path d="M198 98 Q250 106 266 164 Q272 204 264 244 Q254 200 244 166 Q228 126 198 98Z" fill="${c.hair}"/><path d="M200 100 Q230 128 254 150 Q228 136 204 132Z" fill="${c.hair}"/>
+    <path d="M190 102 Q150 120 140 180 M204 102 Q248 120 258 180" stroke="${c.hairL}" stroke-width="3" fill="none" opacity=".7"/>`;
+  }
+  if(!front) return `<circle cx="200" cy="96" r="40" fill="${c.hair}"/><path d="M132 190 Q120 104 200 100 Q280 104 268 190Z" fill="${c.hair}"/>`;
+  return `<path d="M132 176 Q136 104 200 102 Q264 104 268 176 Q250 128 210 126 Q170 132 132 176Z" fill="${c.hair}"/><circle cx="133" cy="226" r="5" fill="#ffc93c"/><circle cx="267" cy="226" r="5" fill="#ffc93c"/>`;
+}
+function bigArm(c,side,shA,elA,prop){
+  const x=side==="L"?116:284, y=330, dir=side==="L"?1:-1;
+  const stripe=c.outfit==="stripe";
+  const sleeve=stripe?`url(#st_${c.id})`:c.suit, sleeveD=stripe?c.stripe:sh(c.suit,-.25);
+  const skin=c.skin, skinD=c.skinD;
+  // yelka -> tirsak (ingichkalashgan yeng)
+  const upper=`<path d="M-26 -6 Q-28 70 -21 150 L21 150 Q28 70 26 -6 Q0 -22 -26 -6Z" fill="${sleeve}" stroke="${sleeveD}" stroke-width="1.6"/>
+    <path d="M${-12*dir} 20 Q${-16*dir} 80 ${-12*dir} 140" stroke="#00000018" stroke-width="8" fill="none"/>`;
+  // bilak: shimarilgan yeng yoki kostyum yengi + oq manjet
+  let fore, cuff="";
+  if(stripe){
+    fore=`<path d="M-19 0 Q-20 60 -14 112 L14 112 Q20 60 19 0Z" fill="${skin}"/><path d="M${8*dir} 14 Q${10*dir} 60 ${7*dir} 104" stroke="${skinD}" stroke-width="3" fill="none" opacity=".45"/>`;
+    cuff=`<rect x="-24" y="-14" width="48" height="26" rx="11" fill="${c.shirt}" stroke="${c.stripe}" stroke-width="2"/><path d="M-22 -2 H22" stroke="${c.stripe}" stroke-width="1.5"/>`;
+  } else {
+    fore=`<path d="M-20 -6 Q-21 60 -16 100 L16 100 Q21 60 20 -6Z" fill="${c.suit}" stroke="${sleeveD}" stroke-width="1.6"/><rect x="-16" y="96" width="32" height="12" rx="4" fill="#fff"/>`;
+  }
+  const watch=(c.watch&&side==="L")?`<rect x="-17" y="92" width="34" height="13" rx="5" fill="#5a2e1a"/><circle cx="0" cy="98.5" r="7.5" fill="#c9a25a" stroke="#5a2e1a" stroke-width="2"/>`:"";
+  // kaft + barmoqlar + bosh barmoq
+  const hand=`<g transform="translate(0,112)">
+    <path d="M-15 0 Q-18 18 -15 30 Q-12 44 -6 46 L6 46 Q14 44 16 30 Q18 16 15 0Z" fill="${skin}"/>
+    <path d="M-9 30 V44 M-3 31 V47 M3 31 V47 M9 30 V43" stroke="${skinD}" stroke-width="1.6" opacity=".55"/>
+    <path d="M${15*dir} 8 Q${27*dir} 14 ${26*dir} 26 Q${22*dir} 30 ${15*dir} 22Z" fill="${skin}" stroke="${skinD}" stroke-width="1" />
+  </g>`;
+  let p="";
+  if(prop==="clipboard") p=`<g transform="translate(-6,124) rotate(-12)"><rect x="-38" y="-10" width="76" height="96" rx="6" fill="#b88a5c"/><rect x="-30" y="2" width="60" height="78" fill="#fff"/><rect x="-14" y="-16" width="28" height="12" rx="3" fill="#888"/><path d="M-22 20h44M-22 34h44M-22 48h30" stroke="#999" stroke-width="4"/></g>`;
+  return `<g transform="translate(${x},${y}) rotate(${shA})">${upper}
+    <g transform="translate(0,146) rotate(${elA})"><circle cx="0" cy="0" r="21" fill="${stripe?skin:c.suit}"/>${fore}${watch}${hand}${cuff}${p}</g></g>`;
+}
+function bigPerson(c,p){
+  // p: armL[sh,el], armR[sh,el], mouth, blink, tilt, brow, smile, propL, propR
+  const s=c.skin, m=clamp(p.mouth||0);
+  let torso;
+  if(c.outfit==="stripe"){
+    torso=`<path d="M100 342 Q112 300 168 290 L200 300 L232 290 Q288 300 300 342 L308 660 L92 660Z" fill="url(#st_${c.id})"/>
+    <path d="M182 294 L200 366 L218 294Z" fill="${c.skinD}"/>
+    <path d="M170 288 L200 350 L188 362 L154 304Z" fill="${c.shirt}" stroke="${c.stripe}" stroke-width="2"/><path d="M230 288 L200 350 L212 362 L246 304Z" fill="${c.shirt}" stroke="${c.stripe}" stroke-width="2"/>
+    <path d="M200 350 V660" stroke="${c.stripe}" stroke-width="2.5"/><circle cx="204" cy="400" r="4" fill="#dfe6f3"/><circle cx="204" cy="460" r="4" fill="#dfe6f3"/><circle cx="204" cy="520" r="4" fill="#dfe6f3"/>
+    <path d="M226 400 h48 v52 q-24 8 -48 0Z" fill="url(#st_${c.id})" stroke="${c.stripe}" stroke-width="2"/><rect x="232" y="404" width="34" height="11" rx="2" fill="#c9a25a"/>`;
+  } else {
+    const d=sh(c.suit,-.3);
+    torso=`<path d="M100 342 Q112 300 168 290 L200 300 L232 290 Q288 300 300 342 L308 660 L92 660Z" fill="${c.suit}"/>
+    <path d="M178 292 L200 380 L222 292Z" fill="#fff"/><path d="M168 290 L200 392 L160 350 L150 306Z" fill="${d}"/><path d="M232 290 L200 392 L240 350 L250 306Z" fill="${d}"/>
+    <circle cx="200" cy="440" r="6" fill="${d}"/><circle cx="200" cy="500" r="6" fill="${d}"/><rect x="238" y="350" width="26" height="8" rx="3" fill="#ffc93c"/>`;
+  }
+  const eyeY=187, bl=p.blink;
+  const eye=(cx,ir)=>bl?`<path d="M${cx-11} ${eyeY+1} q11 6 22 0" stroke="#1d120b" stroke-width="3" fill="none" stroke-linecap="round"/>`:
+    `<ellipse cx="${cx}" cy="${eyeY}" rx="10.5" ry="7.5" fill="#fff"/><circle cx="${cx+ir}" cy="${eyeY}" r="6.2" fill="#7a5a3a"/><circle cx="${cx+ir}" cy="${eyeY}" r="3.1" fill="#1d120b"/><circle cx="${cx+ir+2}" cy="${eyeY-2}" r="1.8" fill="#fff"/><path d="M${cx-11} ${eyeY-2} q11 -8 22 0" stroke="#1d120b" stroke-width="2.4" fill="none"/>`;
+  const by=-(p.brow||0)*8;
+  const brows=`<g transform="translate(0,${by})"><path d="M162 160 q18 -7 32 -2" stroke="${c.hair}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M206 158 q16 -5 32 2" stroke="${c.hair}" stroke-width="5" fill="none" stroke-linecap="round"/></g>`;
+  const glasses=c.glasses?`<g fill="#ffffff12" stroke="#5a2f1a" stroke-width="4.2"><rect x="151" y="168" width="48" height="38" rx="15"/><rect x="201" y="168" width="48" height="38" rx="15"/></g><path d="M196 182 h8" stroke="#5a2f1a" stroke-width="4"/>`:"";
+  const mouth=m>0.07?`<ellipse cx="200" cy="244" rx="${11+5*m}" ry="${2.5+11*m}" fill="#5a1f22"/><path d="M${189-5*m} ${241-4*m} q${11+5*m} -4 ${22+10*m} 0" stroke="#b8706b" stroke-width="3.5" fill="none"/><rect x="${193}" y="${241-5*m}" width="14" height="${3+2*m}" rx="1" fill="#fff" opacity="${m>.3?.9:0}"/>`
+    :(p.smile?`<path d="M182 238 Q200 256 218 238 Q200 248 182 238Z" fill="#b8706b"/>`:`<path d="M184 240 q8 -4 16 -1 q8 -3 16 1 q-16 5 -32 0Z" fill="#b8706b"/><path d="M186 241 q14 8 28 0 q-14 3 -28 0Z" fill="#c98581"/>`);
+  const head=`<g transform="rotate(${p.tilt||0} 200 290)">${bigHair(c,false)}<rect x="182" y="244" width="36" height="62" fill="${c.skinD}"/>
+    <ellipse cx="200" cy="192" rx="62" ry="76" fill="${s}"/>${brows}${eye(176,1)}${eye(224,-1)}${glasses}
+    <path d="M201 200 q-4 16 -3 24 q5 3 10 0" stroke="${c.skinD}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="160" cy="222" rx="13" ry="7" fill="#ff8d8d" opacity=".2"/><ellipse cx="240" cy="222" rx="13" ry="7" fill="#ff8d8d" opacity=".2"/>${mouth}${bigHair(c,true)}</g>`;
+  return `<defs><pattern id="st_${c.id}" width="9" height="10" patternUnits="userSpaceOnUse"><rect width="9" height="10" fill="${c.shirt||"#fff"}"/><rect width="1.6" height="10" fill="${c.stripe||"#fff"}"/></pattern></defs>
+    ${torso}${head}${bigArm(c,"L",p.armL[0],p.armL[1],p.propL)}${bigArm(c,"R",p.armR[0],p.armR[1],p.propR)}`;
+}
+
+// ===================== kichik agent (ofis odamchasi) =====================
+const AG={
+  strateg:{name:"Sardor",role:"Strateg",skin:"#eec09a",hair:"#2e211a",style:"short",type:"blazer",main:"#2f3e5c",acc:["tie"],screen:"chart"},
+  ssen:{name:"Malika",role:"Ssenarist",skin:"#f3cfb1",hair:"#4a2f20",style:"long",type:"sweater",main:"#b5654a",acc:[],screen:"text"},
+  mont:{name:"Asal",role:"Montajchi",skin:"#e2ab84",hair:"#1d1714",style:"bun",type:"hoodie",main:"#22222a",acc:["headphones"],screen:"video"},
+  target:{name:"Komil",role:"Targetolog",skin:"#d29a72",hair:"#2a2a2a",style:"curly",type:"hoodie",main:"#1f6feb",acc:[],screen:"ads"},
+  smm:{name:"Munisa",role:"SMM menejer",skin:"#eec09a",hair:"#5a3825",style:"ponytail",type:"tee",main:"#e85d9a",acc:[],screen:"social"},
+  narx:{name:"Anvar",role:"Narxlash",skin:"#f3cfb1",hair:"#2e211a",style:"side",type:"blazer",main:"#4a3b5c",acc:["glasses"],screen:"mind"},
+  dizayn:{name:"Zebo",role:"Dizayner",skin:"#e2ab84",hair:"#6b4226",style:"long",type:"tee",main:"#f2f2f2",acc:["beret"],screen:"design"},
+  analit:{name:"Doniyor",role:"Analitik",skin:"#eec09a",hair:"#1d1714",style:"short",type:"shirt",main:"#ffffff",acc:["glasses","tie"],screen:"chart"},
+  video:{name:"Bekzod",role:"Videograf",skin:"#d29a72",hair:"#111",style:"short",type:"vest",main:"#5b6b4a",acc:["cap"],screen:"video"},
+  seo:{name:"Gulshan",role:"SEO",skin:"#f3cfb1",hair:"#2e211a",style:"hijab",hijab:"#3b5ba5",type:"tee",main:"#3d7a5a",acc:["glasses"],screen:"text"},
+  kreativ:{name:"Laylo",role:"Kreativ",skin:"#eec09a",hair:"#4a2f20",style:"bun",type:"sweater",main:"#c9a227",acc:[],screen:"mind"},
+  sotuv:{name:"Ravshan",role:"Sotuv",skin:"#e2ab84",hair:"#2a2a2a",style:"side",type:"shirt",main:"#e8f1fb",acc:["headset","tie"],screen:"chat"},
+};
+function agentSVG(L,p){
+  // p: l, r (arm rot), head:{y,rot}, eyes:"o"|"c", mouth:"n"|"h"|"t"|"o", cup, legs(bool), legA
+  const s=L.skin,hc=L.hair,m=L.main,d=sh(m,-.28),sleeve=L.type==="vest"?"#e9e4d8":m,torso=L.type==="vest"?"#e9e4d8":m;
+  let back="",det="",acc="";
+  if(L.style==="long")back=`<path d="M12.6 15 Q11.5 31 14.5 37 L29.5 37 Q32.5 31 31.4 15 Z" fill="${hc}"/>`;
+  if(L.style==="hijab")back=`<path d="M10.6 18 Q10 5.5 22 5 Q34 5.5 33.4 18 L35.5 33 Q22 40 8.5 33 Z" fill="${L.hijab}"/>`;
+  const front={short:`<path d="M13 16.5 Q12.5 7 22 7 Q31.5 7 31 16.5 Q29 11.5 22 11 Q16 11 13 16.5Z" fill="${hc}"/>`,
+    side:`<path d="M13 17 Q12 6.5 22.5 7 Q32 7.5 31 17 Q30 12 26 11 Q20 13 13 17Z" fill="${hc}"/>`,
+    curly:`<g fill="${hc}"><circle cx="14.5" cy="12" r="3.6"/><circle cx="18" cy="8.6" r="3.8"/><circle cx="22.5" cy="7.6" r="3.9"/><circle cx="27" cy="8.8" r="3.7"/><circle cx="29.8" cy="12.4" r="3.4"/></g>`,
+    long:`<path d="M13 18 Q12 7 22 7 Q32 7 31 18 Q29 11 24 10.5 Q19 12 13 18Z" fill="${hc}"/>`,
+    bun:`<circle cx="22" cy="5.4" r="3.7" fill="${hc}"/><path d="M13 17.5 Q12 7 22 7 Q32 7 31 17.5 Q28.5 11.5 22 11.2 Q15.5 11.5 13 17.5Z" fill="${hc}"/>`,
+    ponytail:`<path d="M29.5 10 Q38 13.5 33.5 27 Q32.5 18 29 14Z" fill="${hc}"/><path d="M13 17.5 Q12 7 22 7 Q32 7 31 17.5 Q28.5 11.5 22 11.2 Q15.5 11.5 13 17.5Z" fill="${hc}"/>`,
+    hijab:`<path d="M12.4 17.5 Q12.4 7.2 22 7.2 Q31.6 7.2 31.6 17.5 Q29 12.2 22 12.2 Q15 12.2 12.4 17.5Z" fill="${sh(L.hijab||"#3b5ba5",-.12)}"/>`}[L.style];
+  if(L.type==="blazer"){det+=`<path d="M19 26.3 L22 35 L25 26.3Z" fill="#fff"/>`+(L.acc.includes("tie")?`<path d="M21.2 27.2 h1.6 l.9 6.8 -1.7 2 -1.7-2z" fill="#c1121f"/>`:"")+`<path d="M19 26.3 L22 36 L17.6 31.5 L16.2 27.2Z" fill="${d}"/><path d="M25 26.3 L22 36 L26.4 31.5 L27.8 27.2Z" fill="${d}"/>`;}
+  else if(L.type==="shirt"){det+=`<path d="M18.4 26 L22 29.6 L25.6 26 L24.2 29 L22 30.4 L19.8 29Z" fill="#fff"/><path d="M22 30.4 V51" stroke="${d}" stroke-width=".6"/>`+(L.acc.includes("tie")?`<path d="M21.2 29.6 h1.6 l.9 7 -1.7 2 -1.7-2z" fill="#1d3557"/>`:"");}
+  else if(L.type==="hoodie"){det+=`<path d="M14.5 27.5 Q22 22 29.5 27.5 Q22 31.5 14.5 27.5Z" fill="${d}"/><path d="M20 29.5 v6.5 M24 29.5 v6.5" stroke="#fff" stroke-width=".7"/>`;}
+  else if(L.type==="sweater"){det+=`<path d="M18 26.5 Q22 30 26 26.5" stroke="${d}" stroke-width="1.4" fill="none"/>`;}
+  else if(L.type==="tee"){det+=`<path d="M18.4 26.2 Q22 29.6 25.6 26.2" stroke="${d}" stroke-width="1" fill="none"/><circle cx="22" cy="38" r="3.2" fill="${m>"#999999"?"#e76f51":"#ffc93c"}" opacity=".85"/>`;}
+  else if(L.type==="vest"){det+=`<path d="M12 33 Q12 27 18 26.5 L20.6 52 H14 Q12 52 12 50Z" fill="${m}"/><path d="M32 33 Q32 27 26 26.5 L23.4 52 H30 Q32 52 32 50Z" fill="${m}"/>`;}
+  if(L.acc.includes("glasses"))acc+=`<g stroke="#1b1b1b" stroke-width=".9" fill="#ffffff2a"><circle cx="18.6" cy="17.6" r="2.7"/><circle cx="25.4" cy="17.6" r="2.7"/></g>`;
+  if(L.acc.includes("headphones"))acc+=`<path d="M12.3 17 Q12.3 4.6 22 4.6 Q31.7 4.6 31.7 17" stroke="#111" stroke-width="2.2" fill="none"/><rect x="10" y="14" width="4.6" height="7.5" rx="2" fill="#e63946"/><rect x="29.4" y="14" width="4.6" height="7.5" rx="2" fill="#e63946"/>`;
+  if(L.acc.includes("beret"))acc+=`<ellipse cx="20.5" cy="8" rx="10" ry="3.8" fill="#c1121f" transform="rotate(-12 20.5 8)"/>`;
+  if(L.acc.includes("cap"))acc+=`<path d="M12.6 12.5 Q12.6 4.8 22 4.8 Q31.4 4.8 31.4 12.5 Z" fill="#2b2d42"/><rect x="8" y="10.8" width="7.5" height="2.6" rx="1.3" fill="#2b2d42"/>`;
+  if(L.acc.includes("headset"))acc+=`<path d="M13 15.5 Q13 5.6 22 5.6 Q31 5.6 31 15.5" stroke="#333" stroke-width="1.6" fill="none"/><path d="M12.6 20 Q13.8 24.2 18.4 23.3" stroke="#333" stroke-width="1" fill="none"/>`;
+  const ears=L.style==="hijab"?"":`<circle cx="13.2" cy="18.2" r="2" fill="${s}"/><circle cx="30.8" cy="18.2" r="2" fill="${s}"/>`;
+  const eyes=p.eyes==="c"?`<path d="M17.2 17.8 q1.4 1 2.8 0 M24 17.8 q1.4 1 2.8 0" stroke="#2b2b2b" stroke-width=".8" fill="none" stroke-linecap="round"/>`:`<circle cx="18.6" cy="17.6" r="1.25" fill="#2b2b2b"/><circle cx="25.4" cy="17.6" r="1.25" fill="#2b2b2b"/><circle cx="19" cy="17.2" r=".4" fill="#fff"/><circle cx="25.8" cy="17.2" r=".4" fill="#fff"/>`;
+  const mouth={n:`<path d="M19.8 21.4 q2.2 1.8 4.4 0" stroke="#8a4b3a" stroke-width="1" fill="none" stroke-linecap="round"/>`,h:`<path d="M19 20.8 q3 3.8 6 0 z" fill="#7a2e22"/>`,t:`<path d="M19.9 22.3 q2.1 -.7 4.2 0" stroke="#8a4b3a" stroke-width="1" fill="none"/>`,o:`<ellipse cx="22" cy="22" rx="1.6" ry="1.4" fill="#7a2e22"/>`}[p.mouth||"n"];
+  const cup=p.cup?`<rect x="31" y="45.5" width="4.6" height="5" rx="1" fill="#fff" stroke="#bbb" stroke-width=".4"/><rect x="31.4" y="45.8" width="3.8" height="1.2" fill="#6b4226"/>`:"";
+  const la=p.legA||0;
+  const legs=p.legs===false?"":`<g transform="rotate(${la} 18 50)"><rect x="15" y="49" width="6.2" height="19" rx="2" fill="#2b2d42"/><rect x="13.4" y="66" width="8.8" height="4.6" rx="2.2" fill="#1b1b1b"/></g><g transform="rotate(${-la} 26 50)"><rect x="22.8" y="49" width="6.2" height="19" rx="2" fill="#2b2d42"/><rect x="21.8" y="66" width="8.8" height="4.6" rx="2.2" fill="#1b1b1b"/></g>`;
+  const hd=p.head||{y:0,rot:0};
+  return `${back}${legs}<rect x="19.6" y="22.5" width="4.8" height="5" fill="${sh(s,-.08)}"/>
+   <path d="M12 33 Q12 26 19 26 H25 Q32 26 32 33 V50 Q32 52.5 29.5 52.5 H14.5 Q12 52.5 12 50 Z" fill="${torso}"/>${det}
+   <g transform="rotate(${p.l||0} 11 29)"><rect x="8.4" y="27.6" width="5.2" height="16.6" rx="2.6" fill="${sleeve}"/><circle cx="11" cy="45.2" r="2.5" fill="${s}"/></g>
+   <g transform="rotate(${p.r||0} 33 29)"><rect x="30.4" y="27.6" width="5.2" height="16.6" rx="2.6" fill="${sleeve}"/><circle cx="33" cy="45.2" r="2.5" fill="${s}"/>${cup}</g>
+   <g transform="translate(0,${hd.y}) rotate(${hd.rot} 22 26)">${ears}<circle cx="22" cy="17" r="9" fill="${s}"/>${front}${eyes}${mouth}${acc}</g>`;
+}
+// ish stoli + o'tirgan agent
+function screen(type,t){
+  const W=150,H=96;let s="";
+  if(type==="chart"){for(let i=0;i<5;i++){const h=20+60*Math.abs(Math.sin(t*2+i));s+=`<rect x="${12+i*27}" y="${H-8-h}" width="18" height="${h}" fill="${["#4ade80","#60a5fa","#fbbf24","#4ade80","#f472b6"][i]}"/>`}}
+  else if(type==="text"){for(let i=0;i<5;i++){const w=clamp((t*1.2-i*.3)%3,0,1)*120;s+=`<rect x="12" y="${14+i*15}" width="${w}" height="6" rx="2" fill="#9ad"/>`}}
+  else if(type==="video"){s=`<rect x="8" y="8" width="134" height="44" fill="#6d597a"/><rect x="8" y="60" width="134" height="9" fill="#e9c46a"/><rect x="8" y="74" width="100" height="7" fill="#2a9d8f"/><rect x="${8+(t*40)%130}" y="56" width="3" height="32" fill="#e63946"/>`}
+  else if(type==="ads"){s=`<rect x="10" y="10" width="44" height="60" rx="4" fill="#fff"/><text x="18" y="46" font-size="18" font-weight="900" fill="#f4a261">AD</text><path d="M70 74 L100 50 L120 58 L140 26" stroke="#4ade80" stroke-width="5" fill="none"/>`}
+  else if(type==="social"){for(let i=0;i<6;i++)s+=`<rect x="${12+(i%3)*44}" y="${10+Math.floor(i/3)*40}" width="38" height="34" fill="${i%2?"#f4a261":"#e85d9a"}"/>`}
+  else if(type==="design"){s=`<rect width="${W}" height="${H}" fill="#f7f3ea"/><rect x="12" y="12" width="50" height="40" fill="#e76f51"/><circle cx="100" cy="34" r="22" fill="#2a9d8f"/><rect x="12" y="64" width="120" height="12" fill="#264653"/>`}
+  else if(type==="mind"){s=`<rect x="58" y="38" width="34" height="20" rx="4" fill="#fbbf24"/>`+[[10,8],[110,8],[10,70],[110,70]].map(([x,y])=>`<rect x="${x}" y="${y}" width="30" height="18" rx="4" fill="#b392f0"/>`).join("")}
+  else if(type==="chat"){for(let i=0;i<4;i++)s+=`<rect x="${i%2?60:10}" y="${10+i*20}" width="80" height="14" rx="7" fill="${i%2?"#4ade80":"#60a5fa"}"/>`}
+  return s;
+}
+function station(x,y,key,state,t,k=2.5,on=true){
+  // x,y = desk top centre ; state: work|sleep|hand|happy|idle
+  const L=AG[key]; const ph=(x*7+y*3)%10;
+  let p={l:0,r:0,eyes:"o",mouth:"n",legs:false};
+  if(state==="work"){p.l=-18-6*Math.sin(t*22+ph);p.r=18+6*Math.sin(t*25+ph);p.head={y:0,rot:-3*Math.sin(t*2+ph)}}
+  if(state==="sleep"){p.l=-78;p.r=78;p.eyes="c";p.mouth="o";p.head={y:8+Math.sin(t*2)*.6,rot:-16}}
+  if(state==="hand"){p.r=-168+6*Math.sin(t*6);p.l=-20;p.mouth="n";p.head={y:0,rot:4*Math.sin(t*3)}}
+  if(state==="happy"){p.r=-150+10*Math.sin(t*10);p.l=-20;p.mouth="h";p.head={y:0,rot:5*Math.sin(t*8)}}
+  if(state==="tired"){p.l=-18-3*Math.sin(t*9);p.r=18;p.mouth="t";p.head={y:2,rot:-6}}
+  const screenOn=on&&(state==="work"||state==="tired");
+  let z="";
+  if(state==="sleep"){for(let i=0;i<3;i++){const u=((t*.6+i/3)%1);z+=`<text x="${x+40+u*60}" y="${y-170-u*120}" font-size="${40+u*30}" font-weight="900" fill="#c9c2ff" opacity="${Math.sin(u*Math.PI)}">z</text>`}}
+  const tag=`<g transform="translate(${x+45},${y-238})"><rect x="-120" y="-34" width="240" height="64" rx="16" fill="#1f1b2cdd"/><text x="0" y="-6" text-anchor="middle" font-size="26" font-weight="900" fill="#fff">${L.name}</text><text x="0" y="22" text-anchor="middle" font-size="20" font-weight="700" fill="#ffc93c">${L.role}</text></g>`;
+  return `<g>
+   <rect x="${x-20}" y="${y-110}" width="110" height="112" rx="26" fill="#3a3550"/>
+   <g transform="translate(${x+45-22*k},${y-150}) scale(${k})">${agentSVG(L,p)}</g>
+   <rect x="${x-130}" y="${y}" width="290" height="22" rx="8" fill="#c08d63"/><rect x="${x-120}" y="${y+20}" width="270" height="90" rx="6" fill="#8d5f3e"/>
+   <g transform="translate(${x-128},${y-112})"><rect x="-6" y="-6" width="162" height="108" rx="8" fill="#16161c"/><rect width="150" height="96" fill="${screenOn?"#0d1117":"#05060a"}"/>${screenOn?screen(L.screen,t):""}<rect x="66" y="102" width="18" height="16" fill="#2c2c33"/></g>
+   <rect x="${x+10}" y="${y+4}" width="70" height="10" rx="3" fill="#eee"/>
+   ${z}${tag}</g>`;
+}
+// ofis sahnasi (kamera bilan)
+const DESKS=[["strateg",200,620],["ssen",540,620],["mont",880,620],["target",200,1020],["smm",540,1020],["narx",880,1020],["dizayn",200,1420],["analit",540,1420],["video",880,1420],["seo",200,1820],["kreativ",540,1820],["sotuv",880,1820]];
+function officeBg(){
+  let lights="";for(let i=0;i<14;i++){const x=40+i*76,y=150+18*Math.sin(i*.9);lights+=`<circle cx="${x}" cy="${y}" r="9" fill="#ffd27a"/><circle cx="${x}" cy="${y}" r="26" fill="#ffd27a" opacity=".18"/>`}
+  return `<rect x="-1200" y="-1200" width="3480" height="5000" fill="#2a2440"/>
+   <rect x="-1200" y="-1200" width="3480" height="1560" fill="url(#wall)"/>
+   <path d="M30 150 Q560 200 1050 150" stroke="#555" stroke-width="2" fill="none"/>${lights}
+   <rect x="80" y="210" width="260" height="130" rx="8" fill="#0b1630" stroke="#e8e0d0" stroke-width="10"/><rect x="740" y="210" width="260" height="130" rx="8" fill="#0b1630" stroke="#e8e0d0" stroke-width="10"/>
+   <rect x="430" y="200" width="220" height="110" rx="10" fill="#16141c"/><text x="540" y="268" text-anchor="middle" font-size="40" font-weight="900" fill="#ffc93c">LOBAR AGENCY</text>
+   <rect x="-1200" y="360" width="3480" height="5000" fill="url(#floor)"/>`;
+}
+function office(t,cam,states,extra=""){
+  const s=cam.s, tx=540-cam.x*s, ty=960-cam.y*s;
+  const st=DESKS.map(([k,x,y])=>station(x,y,k,states[k]||"work",t)).join("");
+  return `<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1440"/><stop offset="1" stop-color="#2e2556"/></linearGradient>
+   <pattern id="floor" width="240" height="60" patternUnits="userSpaceOnUse"><rect width="240" height="60" fill="#6b4f3a"/><rect width="240" height="3" fill="#5a4030"/><rect x="${0}" width="3" height="60" fill="#5a4030"/></pattern></defs>
+   <g transform="translate(${tx},${ty}) scale(${s})">${officeBg()}${st}${extra}</g>`;
+}
+// xona foni (Lobar va Kamola sahnalari)
+function roomBg(t,tint="#1b1440"){
+  let lights="";for(let i=0;i<12;i++){const x=60+i*88,y=330+26*Math.sin(i*.8);const b=.6+.4*Math.sin(t*2+i);lights+=`<circle cx="${x}" cy="${y}" r="11" fill="#ffd27a" opacity="${b}"/><circle cx="${x}" cy="${y}" r="36" fill="#ffd27a" opacity="${.15*b}"/>`}
+  return `<defs><radialGradient id="rg" cx="70%" cy="40%" r="80%"><stop offset="0" stop-color="${sh(tint,.5)}"/><stop offset="1" stop-color="#0b0a14"/></radialGradient></defs>
+  <rect width="1080" height="1920" fill="url(#rg)"/>
+  <rect x="150" y="380" width="780" height="700" rx="18" fill="#0a1024" stroke="#2b2650" stroke-width="16"/>
+  <path d="M540 380 V1080 M150 730 H930" stroke="#2b2650" stroke-width="12"/>
+  ${[[260,520],[420,600],[700,470],[820,640],[330,900],[760,950]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${3+i%3}" fill="#fff" opacity="${.4+.4*Math.sin(t*3+i)}"/>`).join("")}
+  <path d="M30 330 Q540 420 1050 330" stroke="#444" stroke-width="3" fill="none"/>${lights}`;
+}
+function personAt(c,p,x,y,s){return `<g transform="translate(${x},${y}) scale(${s})">${bigPerson(c,p)}</g>`}
+function desk(){return `<rect x="-40" y="1500" width="1160" height="40" fill="#c08d63"/><rect x="-40" y="1540" width="1160" height="400" fill="#8d5f3e"/>
+  <path d="M300 1500 L340 1380 H740 L780 1500Z" fill="#c9ccd6"/><circle cx="540" cy="1450" r="26" fill="#16141c"/><text x="540" y="1459" text-anchor="middle" font-size="22" font-weight="900" fill="#ffc93c">LA</text>`}
+
+// ===================== qo'llar pozalari =====================
+const POSE={
+  idle:{armL:[12,-22],armR:[-12,22]},
+  up:{armL:[163,-22],armR:[-163,22]},
+  open:{armL:[55,-35],armR:[-55,35]},
+  chin:{armL:[12,-22],armR:[18,152]},
+  pointR:{armL:[12,-22],armR:[-22,-108]},
+  pointL:{armL:[22,108],armR:[-12,22]},
+  thumb:{armL:[12,-22],armR:[-40,-110]},
+  explainA:{armL:[30,-80],armR:[-14,30]},
+  explainB:{armL:[12,-22],armR:[-30,80]},
+  shrug:{armL:[48,-95],armR:[-48,95]},
+  clip:{armL:[20,-110],armR:[-12,22]},
+};
+const mixPose=(a,b,u)=>({armL:[lerp(a.armL[0],b.armL[0],u),lerp(a.armL[1],b.armL[1],u)],armR:[lerp(a.armR[0],b.armR[0],u),lerp(a.armR[1],b.armR[1],u)]});
+let SHOT_DUR=3, SPEAK=0;
+function seqPose(seq,u,t){ // seq: [[pose,at],...] at in 0..1 of shot
+  let cur=POSE[seq[0][0]];
+  for(let i=1;i<seq.length;i++){const [n,at]=seq[i];const k=ease((u-at)*SHOT_DUR/.38);if(k>0)cur=mixPose(cur,POSE[n],k)}
+  const w=Math.sin(t*2.3)*2.2, g=SPEAK*7*Math.sin(t*7.5);
+  return {armL:[cur.armL[0]+w,cur.armL[1]-g*.6],armR:[cur.armR[0]-w,cur.armR[1]+g]};
+}
+const blinkAt=t=>((t*1000)%3700)<120;
+
+// ===================== UI =====================
+function capHTML(line){
+  if(!line)return"";
+  const isL=line.who==="L";
+  const txt=line.text.replace(/(AGENT|49|0 so'm|10 mln)/g,"<b>$1</b>");
+  return `<div class="cap"><div class="who" style="background:${isL?"#ffc93c":"#8b7cf6"};color:${isL?"#16141c":"#fff"}">${isL?"LOBAR":"KAMOLA · PM"}</div><div class="txt">${txt}</div></div>`;
+}
+function card(html,x,y,w,u,extra=""){const s=pop(u);return `<div class="card" style="left:${x}px;top:${y}px;width:${w}px;transform:scale(${s});opacity:${clamp(u*4)};${extra}">${html}</div>`}
+
+// ===================== sahnalar =====================
+function render(T){
+  const sh_=D.shots.find(s=>T>=s.a&&T<s.b)||D.shots[D.shots.length-1];
+  const u=clamp((T-sh_.a)/(sh_.b-sh_.a)), t=T;
+  const line=D.lines.find(l=>T>=l.a-.05&&T<l.b+.15);
+  const mL=env("L",T), mK=env("K",T);
+  SHOT_DUR=sh_.b-sh_.a;
+  let svg="", html="";
+  const zoom=1+.05*u; // har kadrda sekin yaqinlashish
+  const wrap=(inner)=>`<g transform="translate(540,960) scale(${zoom}) translate(-540,-960)">${inner}</g>`;
+  const lob=(seq,extra={})=>(SPEAK=mL,personAt(LOBAR,{...seqPose(seq,u,t),mouth:mL,blink:blinkAt(t),tilt:2*Math.sin(t*1.7),...extra},170,520,1.85));
+  const kam=(seq,extra={})=>(SPEAK=mK,personAt(KAMOLA,{...seqPose(seq,u,t),mouth:mK,blink:blinkAt(t+1.3),tilt:2*Math.sin(t*1.4),propL:"clipboard",...extra},170,520,1.85));
+  const S=sh_.id;
+  if(S==="s1"){svg=wrap(roomBg(t)+lob([["idle",0],["open",.35],["up",.62]],{smile:true})+desk());
+    html=`<div class="hdr">49 ta xodim —<br><b>0 so'm</b> oylik 😳</div>`;}
+  else if(S==="s2a"){svg=wrap(roomBg(t,"#2b1d5a")+kam([["clip",0],["explainB",.5]],{smile:true}));
+    html=`<div class="hdr">🤖 AI agentlar</div>`;}
+  else if(S==="s2b"){const k=ease(u*1.4);svg=office(t,{x:lerp(540,540,k),y:lerp(620,1150,k),s:lerp(1.6,.62,k)},{target:"sleep",narx:"work",kreativ:"sleep",seo:"tired"});
+    const n=Math.round(49*ease(clamp(u*1.5)));html=`<div class="hdr" style="font-size:150px;top:230px"><div style="display:inline-block;background:rgba(10,8,18,.7);border-radius:30px;padding:10px 40px 20px"><b>${n}</b><div style="font-size:48px">ta xodim · 0 ta odam</div></div></div>`;}
+  else if(S==="s3"){svg=wrap(roomBg(t)+lob([["idle",0],["chin",.15]],{brow:.6})+desk());}
+  else if(S.startsWith("s4")){const i=+S[2]; const key=["strateg","ssen","mont"][i]; const [,x,y]=DESKS.find(d=>d[0]===key);
+    svg=office(t,{x:x-20,y:y-70,s:2.05+.1*u},{});
+    const cards=[`<div style="font-size:40px;font-weight:900">📊 Raqobatchilar tahlili</div><div style="margin-top:18px;display:flex;gap:14px;align-items:flex-end;height:150px">${[.5,.8,.35,.95].map((h,j)=>`<div style="flex:1;background:${["#60a5fa","#4ade80","#f472b6","#ffc93c"][j]};border-radius:8px;height:${h*150*ease(u*2-j*.15)}px"></div>`).join("")}</div>`,
+      `<div style="font-size:40px;font-weight:900">🎬 Reels ssenariysi</div><div style="margin-top:14px;font-size:32px;line-height:1.4;color:#ddd">Hook: "Siz bu videoni o'tkazib yubormadingiz…"${u<.9?"▌":""}</div>`,
+      `<div style="font-size:40px;font-weight:900">✂️ Montaj</div><div style="margin-top:18px;position:relative;height:120px"><div style="height:44px;background:linear-gradient(90deg,#355070,#6d597a,#b56576);border-radius:8px"></div><div style="height:22px;margin-top:12px;background:#e9c46a;border-radius:6px;width:80%"></div><div style="position:absolute;top:0;bottom:0;left:${u*95}%;width:5px;background:#e63946"></div></div>`];
+    html=card(cards[i],110,250,860,u*2.5);}
+  else if(S==="s5a"){svg=wrap(roomBg(t)+lob([["idle",0],["pointR",.12]],{brow:1})+desk());}
+  else if(S==="s5b"||S==="s6"){const [,x,y]=DESKS.find(d=>d[0]==="target");svg=office(t,{x:x-20,y:y-70,s:S==="s5b"?lerp(1.25,2.1,ease(u)):2.1},{target:"sleep"});
+    if(S==="s6")html=card(`<div style="font-size:44px;font-weight:900">📅 Reklama: <span style="color:#ffc93c">fevral</span></div><div style="font-size:30px;color:#bbb;margin-top:8px">Ish yo'q → uxlaydi 😴</div>`,150,260,780,u*2.2);}
+  else if(S==="s7a"){svg=wrap(roomBg(t)+lob([["idle",0],["pointL",.12]],{brow:.8})+desk());}
+  else if(S==="s7b"){const [,x,y]=DESKS.find(d=>d[0]==="narx");svg=office(t,{x:x-20,y:y-90,s:lerp(1.25,2.05,ease(u))},{narx:"hand",target:"sleep"});
+    html=`<div class="hdr" style="top:300px;font-size:120px">✋</div>`;}
+  else if(S==="s8"){const [,x,y]=DESKS.find(d=>d[0]==="narx");svg=office(t,{x:x-20,y:y-90,s:2.05},{narx:"hand",target:"sleep"})+`<rect width="1080" height="1920" fill="#000" opacity=".45"/>`;
+    const typed="10 mln so'm — oylikmi yoki bir martalik?";const n=Math.floor(typed.length*clamp(u*1.6));
+    html=card(`<div style="display:flex;align-items:center;gap:16px"><div style="width:70px;height:70px;border-radius:50%;background:#4a3b5c;display:flex;align-items:center;justify-content:center;font-size:40px">✋</div><div><div style="font-weight:900;font-size:34px">Anvar · Narxlash</div><div style="color:#4ade80;font-size:24px">savol bermoqda…</div></div></div><div style="margin-top:22px;background:#ffc93c;color:#16141c;border-radius:24px 24px 24px 6px;padding:22px 26px;font-size:40px;font-weight:800">${typed.slice(0,n)}${n<typed.length?"▌":""}</div>`,90,620,830,u*3);}
+  else if(S==="s9a"){svg=wrap(roomBg(t)+lob([["idle",0],["thumb",.2]],{smile:mL<.07})+desk());}
+  else if(S==="s9b"){const [,x,y]=DESKS.find(d=>d[0]==="narx");svg=office(t,{x:x-20,y:y-90,s:2.05},{narx:"happy",target:"sleep"});
+    html=card(`<div style="font-size:64px;font-weight:900;text-align:center">Rahmat! 🙏</div>`,240,700,560,u*3.5,"background:#ffffff;color:#16141c");}
+  else if(S==="s10"){svg=wrap(roomBg(t,"#163a2a"));const items=["Raqobatchilar tahlili","Kontent reja","Ssenariylar"];
+    html=card(`<div style="font-size:46px;font-weight:900;margin-bottom:20px">Bugun tayyor:</div>`+items.map((it,j)=>{const k=clamp((u-.12-j*.2)*5);return `<div style="display:flex;align-items:center;gap:20px;font-size:44px;font-weight:800;margin:16px 0;opacity:${.25+.75*k}"><span style="display:inline-flex;width:64px;height:64px;border-radius:50%;background:${k>0?"#3DDC84":"#444"};align-items:center;justify-content:center;transform:scale(${k>0?pop(k):1})">✓</span>${it}</div>`}).join("")+`<div style="margin-top:26px"><span class="pill" style="transform:scale(${pop(clamp((u-.75)*4))});display:inline-block">⏱ 1 kunda</span></div>`,110,560,860,u*3);}
+  else if(S==="s11"){svg=wrap(roomBg(t)+lob([["explainA",0],["explainB",.3],["explainA",.55],["point",.99]].filter(x=>POSE[x[0]]),{smile:false})+desk());
+    if(u>.5)html=card(`<div style="font-size:34px;font-weight:800;text-align:center;color:#bbb">Kommentga yozing:</div><div style="font-size:120px;font-weight:900;text-align:center;color:#ffc93c;letter-spacing:6px">AGENT</div>`,140,240,800,(u-.5)*5);}
+  else if(S==="s11k"){svg=wrap(roomBg(t,"#2b1d5a")+kam([["clip",0],["explainB",.2],["clip",.6]],{smile:mK<.07}));
+    html=card(`<div style="font-size:34px;font-weight:800;text-align:center;color:#bbb">Kommentga yozing:</div><div style="font-size:120px;font-weight:900;text-align:center;color:#ffc93c;letter-spacing:6px">AGENT</div>`,140,240,800,1);}
+  else if(S==="s12"){svg=wrap(roomBg(t)+lob([["idle",0],["shrug",.15]],{brow:.7})+desk());}
+  else if(S==="s13"){ // qahva navbati
+    let q="";const keys=["strateg","ssen","mont","smm","dizayn","target"];
+    keys.forEach((k,i)=>{const bob=Math.sin(t*5+i)*1.5;const tired=k==="target"||k==="mont";q+=`<g transform="translate(${300+i*122},${830+bob}) scale(4.2)">${agentSVG(AG[k],{l:-10,r:i===0?148:-15,cup:i===0,mouth:tired?"t":"n",eyes:k==="target"?"c":"o",legs:true})}</g>`});
+    svg=wrap(roomBg(t,"#3a2418")+`<rect y="1140" width="1080" height="780" fill="#5a4030"/><g transform="translate(40,720)"><rect width="230" height="430" rx="22" fill="#2a2a32"/><rect x="40" y="60" width="150" height="90" rx="10" fill="#111"/><text x="115" y="118" text-anchor="middle" font-size="40" fill="#ffc93c" font-weight="900">☕ 1</text><rect x="70" y="250" width="90" height="16" rx="6" fill="#ffc93c"/><rect x="85" y="300" width="60" height="70" rx="8" fill="#fff"/></g>`+q);
+    html=`<div class="hdr" style="top:380px">Navbat: <b>49</b> kishi ☕</div>`;}
+  else if(S==="end"){svg=`<rect width="1080" height="1920" fill="#0e0d14"/>`;
+    html=card(`<div style="text-align:center"><div style="font-size:30px;letter-spacing:6px;color:#ffc93c;font-weight:900">LOBAR AGENCY</div><div style="font-size:64px;font-weight:900;margin:16px 0">AI agentlar jamoasi</div><div style="font-size:36px;color:#ccc">@smm_lobar_baxtiyarova</div></div>`,110,760,860,u*3,"background:#16141c;border-color:#ffc93c");}
+  document.getElementById("stage").innerHTML=`<svg class="main" viewBox="0 0 1080 1920">${svg}</svg>${html}${S==="end"?"":capHTML(line)}`;
+}
+window.render=render;
+</script></body></html>
