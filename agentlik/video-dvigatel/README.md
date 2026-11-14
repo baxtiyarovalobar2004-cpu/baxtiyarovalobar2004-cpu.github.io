@@ -12,3 +12,7 @@
 
 Yig'ish: `python3 build.py && python3 audio.py && node render.js full && ffmpeg -framerate 30 -i frames/%05d.jpg -i mix.wav -c:v libx264 -crf 20 -pix_fmt yuv420p -c:a aac -shortest video.mp4`
 Ovozlar: vidIQ voiceover (Lobar — Jessica, Kamola — Sarah).
+
+## 2-video: "Hoy boshliq, nima bo'lyapti?" (49 s)
+`video2.html` (Claude-kub personaji, tutun, chat oynalari), `build2.py`, `audio2.py`. Ovozlar `v2/` papkasida: Lobar — Jessica, Kamola — Sarah, Claude — River.
+Render: `VPAGE=video2.html VDATA=data2.json VFRAMES=v2/frames node render.js full`
